@@ -24,6 +24,20 @@ Les deux versions trouvent les chiffres. La différence est dans le jugement : l
 
 ---
 
+## Voir le skill travailler, dans le navigateur
+
+```bash
+python app.py
+```
+
+Puis ouvrir http://127.0.0.1:8790. Rien à installer : bibliothèque standard seulement, et le serveur n'écoute que sur le poste.
+
+- **Lire un dossier** : choisir un des 5 dossiers (ou coller le texte d'un autre), lancer la lecture. Les 12 points s'affichent avec leur statut et les alertes. Un clic sur un point allume, dans le dossier, l'article qu'il cite : on voit d'où vient chaque valeur. En bas, les étapes (consigne, appel au modèle, réponse, contrôle du format, notation) avec leur durée et leur coût, et la réponse brute du modèle.
+- **Évaluer le skill** : la consigne simple et le skill côte à côte, dossier par dossier, et la liste des statuts que le skill corrige. Chaque version peut être relancée.
+- **En direct ou Rejouer** : *En direct* appelle vraiment Claude (de 15 à 45 s par dossier). *Rejouer* réaffiche instantanément les réponses mesurées, sans appel.
+
+L'interface réutilise les fonctions de `evals/evaluer.py` : le score affiché est exactement celui du banc. Tests : `python -m unittest discover -s tests`.
+
 ## Lancer l'évaluation
 
 **Prérequis** : Python 3.10 ou plus (bibliothèque standard seulement), et la CLI [Claude Code](https://docs.claude.com/en/docs/claude-code) installée et connectée (`claude --version` doit répondre).
@@ -77,6 +91,8 @@ lecture-dce/
     evaluer.py            exécute, note, trace coût et durée
     resultats-v0.1.json   consigne simple
     resultats-v0.2.json   skill
+  app.py, ui/             l'interface locale (http://127.0.0.1:8790)
+  tests/                  tests de l'interface
   CHANGELOG.md            chaque version et son score
 ```
 

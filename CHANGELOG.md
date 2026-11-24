@@ -2,6 +2,11 @@
 
 Chaque version est évaluée sur les mêmes 5 dossiers, avec le même modèle (Claude Sonnet).
 
+## Interface locale, 24/11/2026
+
+- `python app.py` : lire un dossier en voyant d'où vient chaque valeur, et relancer le banc dans le navigateur. Modes *En direct* et *Rejouer*. 12 tests.
+- Contrôle à nouveau le 24/11 en direct : 100 % sur les 5 dossiers, 0 invention.
+
 ## 0.2.0, 20/11/2026 : le skill
 
 - Définition écrite de chaque statut (`eliminatoire`, `risque`, `ok`, `a_verifier`, `non_trouve`).

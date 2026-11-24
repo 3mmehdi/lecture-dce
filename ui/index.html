@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lecture-dce</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="barre">
+  <div class="marque">
+    <h1>Lecture de DCE</h1>
+    <p>Un skill Claude relève les 12 points d'un dossier de consultation, et cite d'où vient chacun.</p>
+  </div>
+  <nav class="onglets" aria-label="Vues">
+    <button class="onglet actif" data-vue="lire" aria-pressed="true">Lire un dossier</button>
+    <button class="onglet" data-vue="banc" aria-pressed="false">Évaluer le skill</button>
+  </nav>
+  <div class="mode" role="radiogroup" aria-label="Mode">
+    <div class="bascule"><button role="radio" aria-checked="true" data-mode="direct" class="choix actif">En direct</button><button role="radio" aria-checked="false" data-mode="rejouer" class="choix">Rejouer</button></div>
+    <span class="aide" id="aide-mode">Appelle vraiment Claude : de 15 à 45 s par dossier selon la charge.</span>
+  </div>
+</header>
+
+<main>
+  <!-- Vue 1 : lire un dossier -->
+  <section id="vue-lire" class="vue lire">
+    <aside class="dossiers" aria-label="Dossiers">
+      <h2>Dossiers de test</h2>
+      <ul id="liste-cas"></ul>
+      <button class="lien" id="btn-coller">Coller un autre dossier</button>
+      <div id="zone-coller" hidden>
+        <label for="texte-colle">Texte du dossier (RC, CCAP, acte d'engagement)</label>
+        <textarea id="texte-colle" rows="10" placeholder="# Intitulé du marché&#10;## RC&#10;Art. 2.1 Date limite : …"></textarea>
+        <p class="note">Les liens vers le texte marchent si chaque pièce commence par « ## » et chaque article par « Art. ».</p>
+      </div>
+      <button class="action" id="btn-lire">Lire le dossier</button>
+    </aside>
+
+    <article class="feuille-zone" aria-label="Le dossier">
+      <div class="feuille" id="feuille">
+        <p class="vide">Choisis un dossier à gauche.</p>
+      </div>
+    </article>
+
+    <section class="releve" aria-label="Ce que le skill a relevé">
+      <p class="vide-releve" id="vide-releve">Lance la lecture : les 12 points s'affichent ici. Clique sur l'un d'eux pour voir la ligne du dossier d'où il vient.</p>
+      <div id="alertes"></div>
+      <ol id="points" class="points"></ol>
+      <div id="notation"></div>
+    </section>
+
+    <footer class="deroule" aria-label="Ce qui se passe">
+      <ol id="etapes" class="etapes">
+        <li data-e="consigne"><b>Consigne</b><span>—</span></li>
+        <li data-e="appel"><b>Appel au modèle</b><span>—</span></li>
+        <li data-e="reponse"><b>Réponse reçue</b><span>—</span></li>
+        <li data-e="controle"><b>Contrôle du format</b><span>—</span></li>
+        <li data-e="notation"><b>Notation</b><span>—</span></li>
+      </ol>
+      <button class="lien" id="btn-brut" disabled>Voir la réponse brute</button>
+      <pre id="brut" hidden></pre>
+    </footer>
+  </section>
+
+  <!-- Vue 2 : évaluer -->
+  <section id="vue-banc" class="vue banc" hidden>
+    <div class="versions">
+      <div class="version" id="v-v0.1">
+        <h2>Consigne simple</h2>
+        <p class="sous">Une phrase et la liste des 12 clés, sans définir les statuts.</p>
+        <p class="score"><span>—</span></p>
+        <dl class="chiffres"></dl>
+        <button class="action discret" data-banc="v0.1">Relancer la consigne simple</button>
+      </div>
+      <div class="version skill" id="v-v0.2">
+        <h2>Le skill</h2>
+        <p class="sous">Statuts définis, contradictions signalées, « non trouvé » obligatoire.</p>
+        <p class="score"><span>—</span></p>
+        <dl class="chiffres"></dl>
+        <button class="action" data-banc="v0.2">Relancer le skill</button>
+      </div>
+    </div>
+    <table class="dossiers-banc" aria-label="Score par dossier">
+      <thead><tr><th scope="col">Dossier</th><th scope="col">Consigne simple</th><th scope="col">Le skill</th><th scope="col">Durée</th><th scope="col">Coût</th></tr></thead>
+      <tbody id="lignes-banc"></tbody>
+    </table>
+    <section class="corriges">
+      <h2>Ce que le skill corrige</h2>
+      <p class="sous">Les statuts que la consigne simple rend faux, dossier par dossier. Le skill n'en rate aucun.</p>
+      <ul id="liste-corriges"></ul>
+    </section>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
