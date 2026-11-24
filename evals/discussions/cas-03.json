@@ -1,0 +1,48 @@
+[
+ {
+  "etape": "session",
+  "modele": "claude-sonnet-5-5",
+  "skills": 181,
+  "present": true
+ },
+ {
+  "etape": "reflechit"
+ },
+ {
+  "etape": "outil",
+  "nom": "Skill",
+  "detail": "lecture-dce"
+ },
+ {
+  "etape": "charge",
+  "quoi": "SKILL.md",
+  "caracteres": 3482,
+  "debut": "Base directory for this skill: ~\\.claude\\skills\\lecture-dce\n\n# Lecture de DCE\n\nTu aides un chargé d'études d'une entreprise générale du BTP à décider vite s'il répond à une consultation, et à ne rater aucune clause qui coûte cher.\n\n## Ce que tu rends\n\nUn objet JSON, et rien d'autre, avec exactement ces 12 clés :\n\n`date_limite`, `visite`, `criteres`, `penalites_retard`, `retenue_garantie`, `avance`, `revision_prix`, `variantes`, `delai_execution`, `sous_traitance`, `assurances`, `pieces_candidature`\n\nChaque clé vaut un objet :\n\n```json\n{\"valeur\": \"texte court, chiffres recopiés à l"
+ },
+ {
+  "etape": "reflechit"
+ },
+ {
+  "etape": "outil",
+  "nom": "Read",
+  "detail": "~\\.claude\\skills\\lecture-dce\\references\\points.md"
+ },
+ {
+  "etape": "lu",
+  "caracteres": 2529
+ },
+ {
+  "etape": "reflechit"
+ },
+ {
+  "etape": "texte",
+  "texte": "{\n  \"date_limite\": {\n    \"valeur\": \"05/03/2027 à 11h30\",\n    \"source\": \"RC art. 2.1\",\n    \"statut\": \"ok\"\n  },\n  \"visite\": {\n    \"valeur\": \"sans objet\",\n    \"source\": \"RC art. 2.3\",\n    \"statut\": \"ok\"\n  },\n  \"criteres\": {\n    \"valeur\": \"prix 60 %, valeur technique 30 %, délai 10 %\",\n    \"source\": \"RC art. 5\",\n    \"statut\": \"ok\"\n  },\n  \"penalites_retard\": {\n    \"valeur\": \"500 euros HT par jour calendaire, aucun plafond indiqué\",\n    \"source\": \"CCAP art. 8\",\n    \"statut\": \"risque\",\n    \"pourquoi\": \"Le montant est fixe, sans plafond, et la règle de risque (pénalités sans plafond) joue. Le dossier ne donne pas le montant du marché, donc la part du marché ne se chiffre pas ; si le délai de 14 mois de l'AE était tenu face aux 12 mois du CCAP, l'écart de 2 mois ferait environ 60 jours × 500 euros HT = environ 30 000 euros HT, sur une base de 30 jours par mois.\",\n    \"que_faire\": \"Faire lever la contradiction de délai avant de chiffrer et provisionner le risque de pénalités dans le prix, question à poser avant le 05/03/2027.\",\n    \"question\": \"Le CCAP art. 8 prévoit 500 euros HT par jour calendaire de retard : un plafond des pénalités (en pourcentage du montant du marché) est-il prévu, et si oui où figure-t-il ?\"\n  },\n  \"retenue_garantie\": {\n    \"valeur\": \"5 %\",\n    \"source\": \"CCAP art. 4.6\",\n    \"statut\": \"ok\"\n  },\n  \"avance\": {\n    \"valeur\": \"5 %, sous réserve d'une garantie à première demande\",\n    \"source\": \"CCAP art. 4.2\",\n    \"statut\": \"ok\"\n  },\n  \"revision_prix\": {\n    \"valeur\": \"prix fermes, non actualisables et non révisables\",\n    \"source\": \"CCAP art. 3.1\",\n    \"statut\": \"risque\",\n    \"pourquoi\": \"Les prix sont fermes sans actualisation ni révision sur un marché de 12 mois (CCAP art. 2.2) ou 14 mois (AE art. 3), soit plus de 3 mois : la règle de risque joue. Toute hausse des matériaux ou de la main-d'œuvre pendant la durée du marché reste à la charge de l'entreprise, et le prix pèse 60 % de la note (RC art. 5).\",\n    \"que_faire\": \"Provisionner la hausse attendue des matériaux et de la main-d'œuvre dans le prix de l'offre, à arbitrer avant le 05/03/2027.\"\n  },\n  \"variantes\": {\n    \"valeur\": \"interdites\",\n    \"source\": \"RC art. 1.4\",\n    \"statut\": \"ok\"\n  },\n  \"delai_execution\": {\n    \"valeur\": \"CCAP : 12 mois, période de préparation incluse ; AE : 14 mois\",\n    \"source\": \"CCAP art. 2.2 ; Acte d'engagement art. 3\",\n    \"statut\": \"a_verifier\",\n    \"pourquoi\": \"Le CCAP fixe un délai global de 12 mois préparation incluse, l'AE engage le titulaire sur 14 mois : deux pièces se contredisent, donc a_verifier. Le délai pèse 10 % de la note (RC art. 5), et le dossier ne dit pas laquelle des deux valeurs sert de référence aux pénalités de 500 euros HT par jour calendaire (CCAP art. 8).\",\n    \"que_faire\": \"Poser la question à l'acheteur avant le 05/03/2027 et ne pas signer l'AE à 14 mois tant que la réponse n'est pas reçue.\",\n    \"question\": \"Le CCAP art. 2.2 fixe un délai global de 12 mois, période de préparation incluse, et l'Acte d'engagement art. 3 un délai de 14 mois : quel délai prévaut pour l'exécution, pour la notation du critère délai (RC art. 5) et pour le calcul des pénalités (CCAP art. 8) ?\"\n  },\n  \"sous_traitance\": {\n    \"valeur\": \"non trouvé\",\n    \"source\": \"\",\n    \"statut\": \"non_trouve\"\n  },\n  \"assurances\": {\n    \"valeur\": \"décennale de 2 000 000 euros minimum par sinistre\",\n    \"source\": \"CCAP art. 10\",\n    \"statut\": \"risque\",\n    \"pourquoi\": \"Un montant minimum de garantie est exigé (2 000 000 euros par sinistre) : la règle de risque joue si la police de l'entreprise est en dessous. Le dossier ne dit pas à quel moment l'attestation doit être fournie, et le coût d'un relèvement de plafond ne peut pas être chiffré avec les seuls chiffres du dossier.\",\n    \"que_faire\": \"Comparer le plafond de la police décennale de l'entreprise aux 2 000 000 euros par sinistre et demander un avenant à l'assureur si besoin, avant le 05/03/2027.\"\n  },\n  \"pieces_candidature\": {\n    \"valeur\": \"DC1, DC2, Kbis de moins de 3 mois, à peine d'irrecevabilité\",\n    \"source\": \"RC art. 4\",\n    \"statut\": \"eliminatoire\",\n    \"pourquoi\": \"Le RC exige ces pièces à peine d'irrecevabilité : l'oubli d'une seule fait rejeter la candidature. Le Kbis doit avoir moins de 3 mois, le dossier ne précisant pas la date de référence.\",\n    \"que_faire\": \"Joindre DC1, DC2 et un Kbis de moins de 3 mois à la date limite du 05/03/2027 à 11h30, donc édité après le 05/12/2026 si la référence est la remise.\"\n  },\n  \"alertes\": [\n    \"Éliminatoire : DC1, DC2 et Kbis de moins de 3 mois sont exigés à peine d'irrecevabilité (RC art. 4).\",\n    \"Contradiction : délai de 12 mois préparation incluse (CCAP art. 2.2) contre 14 mois (Acte d'engagement art. 3).\",\n    \"Risque : pénalités de 500 euros HT par jour calendaire, sans plafond indiqué (CCAP art. 8).\",\n    \"Risque : prix fermes, non actualisables et non révisables sur plus de 3 mois (CCAP art. 3.1).\",\n    \"Risque : assurance décennale de 2 000 000 euros minimum par sinistre (CCAP art. 10).\"\n  ],\n  \"a_faire\": [\n    {\n      \"quand\": \"avant la remise\",\n      \"quoi\": \"Comparer le plafond de la police décennale aux 2 000 000 euros par sinistre exigés, et demander un avenant si besoin.\",\n      \"source\": \"CCAP art. 10\"\n    },\n    {\n      \"quand\": \"avant la remise\",\n      \"quoi\": \"Provisionner la hausse des matériaux et de la main-d'œuvre dans le prix, les prix étant fermes et non révisables.\",\n      \"source\": \"CCAP art. 3.1\"\n    },\n    {\n      \"quand\": \"avant la remise\",\n      \"quoi\": \"Prévoir la garantie à première demande si l'entreprise veut percevoir l'avance de 5 %.\",\n      \"source\": \"CCAP art. 4.2\"\n    },\n    {\n      \"quand\": \"avant le 05/03/2027\",\n      \"quoi\": \"Envoyer à l'acheteur la question sur le délai de 12 mois (CCAP) contre 14 mois (AE) et sur le plafond des pénalités.\",\n      \"source\": \"CCAP art. 2.2, Acte d'engagement art. 3, CCAP art. 8\"\n    },\n    {\n      \"quand\": \"05/03/2027 à 11h30\",\n      \"quoi\": \"Remettre l'offre avec DC1, DC2 et un Kbis de moins de 3 mois.\",\n      \"source\": \"RC art. 2.1 et art. 4\"\n    }\n  ]\n}"
+ },
+ {
+  "etape": "resultat",
+  "duree_s": 36.4,
+  "cout_usd": 0.2307602,
+  "tours": 4,
+  "erreur": false
+ }
+]

@@ -1,7 +1,7 @@
 # Interface locale du skill lecture-dce : lire un dossier et voir d'où vient chaque valeur, puis rejouer le banc d'évaluation.
 # Lancement : python app.py  puis  http://127.0.0.1:8790
 # Bibliothèque standard seulement. Les appels au modèle et la notation sont ceux de evals/evaluer.py, sans copie.
-import json, mimetypes, pathlib, re, sys, time
+import json, mimetypes, pathlib, re, subprocess, sys, tempfile, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 ICI = pathlib.Path(__file__).parent
@@ -11,6 +11,8 @@ import evaluer as ev  # noqa: E402  (SKILL, NAIF, CLES, appeler, noter)
 
 HOTE, PORT = "127.0.0.1", 8790
 VERSION_SKILL = "v0.3"  # la version rejouée et comparée à la consigne simple
+DISCUSSIONS = EV / "discussions"  # conversations Claude Code enregistrées, pour le mode Rejouer
+QUESTION = "Analyse ce DCE : qu'est-ce que je dois retenir avant de répondre ?"
 STATUTS = {"ok", "risque", "eliminatoire", "a_verifier", "non_trouve"}
 NOMS = {"date_limite": "Date limite", "visite": "Visite de site", "criteres": "Critères", "penalites_retard": "Pénalités de retard",
         "retenue_garantie": "Retenue de garantie", "avance": "Avance", "revision_prix": "Révision des prix", "variantes": "Variantes",
@@ -117,12 +119,97 @@ def derouler_lecture(texte, cas, mode, modele="sonnet"):
             yield {"etape": "erreur", "message": f"L'appel au modèle a échoué : {type(e).__name__}. Vérifie que « claude --version » répond, ou passe en mode Rejouer."}
             return
     yield {"etape": "reponse", "duree_s": round(duree, 1), "cout_usd": cout, "brut": rep}
+    yield from apres_reponse(rep, texte, dossier, cas)
+    yield {"etape": "fin"}
+
+def apres_reponse(rep, texte, dossier, cas):
+    """Les mêmes contrôles et la même notation, que la réponse vienne du banc ou d'une conversation Claude Code."""
     expl = ev.controler_explications(rep, texte)
     yield {"etape": "controle", **controler(rep), "explications": expl}
     yield {"etape": "points", "points": points_affiches(rep, dossier, expl["chiffres_absents"]), "alertes": rep.get("alertes", []),
            "a_faire": a_faire_affiche(rep, dossier)}
     if cas:
         yield {"etape": "notation", **noter(rep, cas)}
+
+# ---------------------------------------------------------------- conversation Claude Code (le skill installé, déclenché par sa description)
+MAISON = str(pathlib.Path.home())
+
+def anonyme(s):
+    return str(s).replace(MAISON, "~").replace(MAISON.replace("\\", "/"), "~")
+
+def traduire(e, vus):
+    """Un événement stream-json de « claude -p » -> zéro ou plusieurs étapes lisibles. On ne garde que ce qui explique le déroulé."""
+    t = e.get("type")
+    if t == "system" and e.get("subtype") == "init":
+        skills = e.get("skills") or []
+        yield {"etape": "session", "modele": e.get("model", ""), "skills": len(skills), "present": "lecture-dce" in skills}
+    elif t == "assistant":
+        for c in e.get("message", {}).get("content", []):
+            k = c.get("type")
+            if k == "thinking" and "reflechit" not in vus:
+                vus.add("reflechit"); yield {"etape": "reflechit"}
+            elif k == "tool_use":
+                vus.discard("reflechit")
+                entree = c.get("input") or {}
+                detail = entree.get("skill") or anonyme(entree.get("file_path") or json.dumps(entree, ensure_ascii=False))
+                yield {"etape": "outil", "nom": c.get("name", ""), "detail": detail}
+            elif k == "text" and c.get("text", "").strip():
+                vus.discard("reflechit"); yield {"etape": "texte", "texte": c["text"]}
+    elif t == "user":
+        for c in e.get("message", {}).get("content", []):
+            if not isinstance(c, dict): continue
+            if c.get("type") == "text" and c.get("text", "").startswith("Base directory for this skill"):
+                yield {"etape": "charge", "quoi": "SKILL.md", "caracteres": len(c["text"]), "debut": anonyme(c["text"][:600])}
+            elif c.get("type") == "tool_result":
+                contenu = c.get("content")
+                taille = len(contenu) if isinstance(contenu, str) else sum(len(x.get("text", "")) for x in contenu or [] if isinstance(x, dict))
+                if taille > 40: yield {"etape": "lu", "caracteres": taille}
+    elif t == "result":
+        yield {"etape": "resultat", "duree_s": round((e.get("duration_ms") or 0) / 1000, 1), "cout_usd": e.get("total_cost_usd", 0),
+               "tours": e.get("num_turns", 0), "erreur": bool(e.get("is_error"))}
+
+def derouler_discussion(texte, question, cas, mode, modele="sonnet"):
+    dossier = decouper(texte)
+    yield {"etape": "dossier", "dossier": dossier}
+    yield {"etape": "demande", "question": question, "lignes": len(texte.splitlines())}
+    etapes = []
+    if mode == "rejouer":
+        f = DISCUSSIONS / f"{cas}.json"
+        if not cas or not f.exists():
+            yield {"etape": "erreur", "message": "Aucune conversation enregistrée pour ce dossier. Passe en direct : chaque conversation en direct sur un dossier de test est enregistrée."}
+            return
+        for x in json.loads(f.read_text(encoding="utf-8")):
+            time.sleep(0.5 if x["etape"] in ("outil", "charge", "lu", "texte") else 0.15)  # assez pour suivre à l'œil
+            etapes.append(x); yield {**x, "rejoue": True}
+    else:
+        vus = set()
+        with tempfile.TemporaryDirectory() as vide:  # dossier vide : aucune consigne de projet ne s'ajoute au skill
+            try:
+                proc = subprocess.Popen(["claude", "-p", "--model", modele, "--output-format", "stream-json", "--verbose",
+                                         "--allowedTools", "Skill Read"], cwd=vide, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                        stderr=subprocess.DEVNULL, text=True, encoding="utf-8")
+            except OSError as e:
+                yield {"etape": "erreur", "message": f"Claude Code introuvable ({type(e).__name__}). Vérifie que « claude --version » répond."}; return
+            proc.stdin.write(f"{question}\n\n{texte}"); proc.stdin.close()
+            for ligne in proc.stdout:
+                try: e = json.loads(ligne)
+                except json.JSONDecodeError: continue
+                for x in traduire(e, vus):
+                    etapes.append(x); yield x
+            proc.wait(timeout=30)
+        if cas and any(x["etape"] == "resultat" and not x["erreur"] for x in etapes):
+            DISCUSSIONS.mkdir(exist_ok=True)
+            (DISCUSSIONS / f"{cas}.json").write_text(json.dumps(etapes, ensure_ascii=False, indent=1), encoding="utf-8")
+    final = next((x["texte"] for x in reversed(etapes) if x["etape"] == "texte"), "")
+    m = re.search(r"\{.*\}", final, re.S)
+    try:
+        rep = json.loads(m.group(0)) if m else None
+    except json.JSONDecodeError:
+        rep = None
+    if rep is None:
+        yield {"etape": "erreur", "message": "La réponse ne contient pas d'objet JSON lisible : elle reste affichée telle quelle, sans fiche."}
+        return
+    yield from apres_reponse(rep, texte, dossier, cas)
     yield {"etape": "fin"}
 
 def derouler_banc(version, mode, modele="sonnet"):
@@ -208,6 +295,11 @@ class Gestion(BaseHTTPRequestHandler):
             texte = (d.get("texte") or "").strip()
             if not texte: return self._json({"message": "Le dossier est vide. Choisis un dossier ou colle son texte."}, 400)
             return self._flux(derouler_lecture(texte, d.get("cas"), mode, d.get("modele") or "sonnet"))
+        if self.path == "/api/discussion":
+            texte = (d.get("texte") or "").strip()
+            if not texte: return self._json({"message": "Le dossier est vide. Choisis un dossier ou colle son texte."}, 400)
+            question = (d.get("question") or "").strip() or QUESTION
+            return self._flux(derouler_discussion(texte, question, d.get("cas"), mode, d.get("modele") or "sonnet"))
         if self.path == "/api/banc":
             v = "v0.1" if d.get("version") == "v0.1" else VERSION_SKILL
             return self._flux(derouler_banc(v, mode, d.get("modele") or "sonnet"))

@@ -14,6 +14,7 @@
   </div>
   <nav class="onglets" aria-label="Vues">
     <button class="onglet actif" data-vue="lire" aria-pressed="true">Lire un dossier</button>
+    <button class="onglet" data-vue="claude" aria-pressed="false">Dans Claude Code</button>
     <button class="onglet" data-vue="banc" aria-pressed="false">Évaluer le skill</button>
   </nav>
   <div class="mode" role="radiogroup" aria-label="Mode">
@@ -68,7 +69,43 @@
     </footer>
   </section>
 
-  <!-- Vue 2 : évaluer -->
+  <!-- Vue 2 : le même skill, utilisé comme un chargé d'études le ferait dans Claude Code -->
+  <section id="vue-claude" class="vue claude" hidden>
+    <div class="fil-zone">
+      <form class="demande" id="form-claude">
+        <div class="champ">
+          <label for="claude-cas">Dossier joint</label>
+          <select id="claude-cas"></select>
+        </div>
+        <div class="champ large">
+          <label for="claude-question">Ce que le chargé d'études écrit</label>
+          <input id="claude-question" value="Analyse ce DCE : qu'est-ce que je dois retenir avant de répondre ?">
+        </div>
+        <button class="action" id="btn-claude" type="submit">Envoyer à Claude Code</button>
+      </form>
+      <ol class="fil" id="fil" aria-live="polite">
+        <li class="vide-fil">Aucune consigne n'est envoyée : seulement la question et le dossier. Claude doit trouver tout seul qu'un skill installé correspond, le charger, puis répondre.</li>
+      </ol>
+      <div class="sortie" id="sortie-claude" hidden>
+        <p id="note-claude"></p>
+        <button class="action discret" id="btn-fiche" type="button">Voir cette réponse en fiche</button>
+      </div>
+    </div>
+    <aside class="coulisses" aria-labelledby="titre-coulisses">
+      <h2 id="titre-coulisses">Ce qui se passe</h2>
+      <ol class="phases" id="phases">
+        <li data-p="session"><b>Claude ne voit que des descriptions</b><span>Au démarrage, chaque skill installé ne lui montre que son nom et sa description.</span></li>
+        <li data-p="choix"><b>Il choisit le skill</b><span>La question parle d'un DCE : la description de lecture-dce correspond.</span></li>
+        <li data-p="charge"><b>Il charge la consigne</b><span>SKILL.md entre dans le contexte seulement maintenant.</span></li>
+        <li data-p="lu"><b>Il lit la référence</b><span>references/points.md : les règles de statut, lues à la demande.</span></li>
+        <li data-p="texte"><b>Il répond</b><span>Le JSON défini par le skill, rien d'autre.</span></li>
+        <li data-p="controle"><b>On contrôle et on note</b><span>Les mêmes contrôles et la même notation que le banc.</span></li>
+      </ol>
+      <div class="ecart" id="ecart" hidden></div>
+    </aside>
+  </section>
+
+  <!-- Vue 3 : évaluer -->
   <section id="vue-banc" class="vue banc" hidden>
     <div class="versions">
       <div class="version" id="v-v0.1">

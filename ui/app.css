@@ -119,6 +119,51 @@ textarea{width:100%;margin-top:4px;background:var(--panneau);color:var(--encre);
 #brut{flex-basis:100%;max-height:220px;overflow:auto;margin:6px 0 0;padding:10px;background:var(--bureau);border:1px solid var(--filet);font:12px/1.45 Mono,monospace;color:var(--encre2)}
 .erreur{color:var(--accent);font-size:14px;margin:8px 0}
 
+/* ---------- vue Claude Code */
+.claude{display:grid;grid-template-columns:minmax(0,1fr) 340px;height:100%;min-height:520px}
+.fil-zone{overflow:auto;padding:20px 28px 28px;display:flex;flex-direction:column;gap:16px}
+.demande{display:grid;grid-template-columns:minmax(180px,260px) minmax(0,1fr) auto;gap:12px;align-items:end;
+  padding-bottom:16px;border-bottom:1px solid var(--filet);position:sticky;top:-20px;background:var(--bureau);z-index:1;padding-top:4px}
+.demande .champ{display:flex;flex-direction:column;gap:4px;min-width:0}
+.demande select,.demande input{background:var(--panneau);color:var(--encre);border:1px solid var(--filet);border-radius:6px;padding:8px 10px;font:inherit;font-size:14px;min-width:0}
+.demande .action{margin:0}
+.fil{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;max-width:860px}
+.fil li{font-size:14px}
+.fil .vide-fil{color:var(--encre2);max-width:60ch}
+.fil .humain{align-self:flex-end;max-width:70%;background:var(--panneau);border:1px solid var(--filet);border-radius:10px 10px 2px 10px;padding:10px 14px}
+.fil .humain p{margin:0}.fil .humain small{display:block;font:12px Mono,monospace;color:var(--encre2);margin-top:4px}
+.fil .systeme{font:12px Mono,monospace;color:var(--absent)}
+.fil .attente{font:12px Mono,monospace;color:var(--risque)}
+.fil .attente::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:8px;animation:pouls 1.2s ease-in-out infinite}
+@keyframes pouls{50%{opacity:.25}}
+.fil .outil{font:13px Mono,monospace;color:var(--encre)}
+.fil .outil::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:9px}
+.fil .outil span{color:var(--encre2)}
+.fil .retour{font:12px Mono,monospace;color:var(--encre2);padding-left:16px;border-left:1px solid var(--filet);margin-left:3px}
+.fil .retour pre{white-space:pre-wrap;margin:6px 0 0;max-height:180px;overflow:auto;color:var(--absent)}
+.fil .reponse-claude pre{margin:0;padding:12px 14px;background:var(--panneau);border:1px solid var(--filet);border-radius:8px;
+  font:12px/1.5 Mono,monospace;color:var(--encre);white-space:pre-wrap;max-height:420px;overflow:auto}
+.fil .erreur{color:var(--accent)}
+.sortie{display:flex;align-items:center;gap:16px;flex-wrap:wrap;max-width:860px;padding-top:6px;border-top:1px solid var(--filet)}
+.sortie p{margin:0;font-size:14px;color:var(--encre2)}.sortie b{color:var(--encre);font-weight:600}
+.sortie .action{margin:0}
+.coulisses{border-left:1px solid var(--filet);background:var(--panneau);padding:20px 22px;overflow:auto}
+.coulisses h2{font:400 20px/1.1 ISerif,serif;margin:0 0 12px}
+.phases{list-style:none;margin:0;padding:0;counter-reset:ph}
+.phases li{counter-increment:ph;position:relative;padding:8px 0 10px 30px;border-top:1px solid var(--filet);color:var(--absent)}
+.phases li::before{content:counter(ph);position:absolute;left:0;top:8px;width:20px;height:20px;border-radius:50%;border:1px solid currentColor;
+  font:11px/18px Mono,monospace;text-align:center}
+.phases li b{display:block;font-weight:500;font-size:14px}
+.phases li span{display:block;font-size:13px;line-height:1.45}
+.phases li.encours{color:var(--risque)}
+.phases li.fait{color:var(--encre2)}.phases li.fait b{color:var(--encre)}.phases li.fait::before{color:var(--ok)}
+.ecart{margin-top:18px;font-size:13px}
+.ecart h3{font:400 18px/1.1 ISerif,serif;margin:0 0 8px}
+.ecart table{width:100%;border-collapse:collapse}
+.ecart th{text-align:left;font-weight:500;color:var(--encre2);padding:4px 6px 4px 0}
+.ecart td{padding:5px 6px 5px 0;border-top:1px solid var(--filet);font-variant-numeric:tabular-nums}
+.ecart p{color:var(--encre2);margin:10px 0 0}
+
 /* ---------- vue banc */
 .banc{padding:26px 28px 40px;max-width:1100px;margin:0 auto}
 .versions{display:grid;grid-template-columns:1fr 1fr;gap:28px}
@@ -153,6 +198,10 @@ tr.encours td{color:var(--risque)}
   .feuille{padding:28px 22px 32px 36px}
   .feuille p.cite::before{left:-20px}
   .versions{grid-template-columns:1fr}
+  .claude{grid-template-columns:1fr;height:auto}
+  .demande{grid-template-columns:1fr;position:static}
+  .coulisses{border-left:0;border-top:1px solid var(--filet)}
+  .fil .humain{max-width:100%}
   #liste-corriges{columns:1}
   .etapes{flex-direction:column}
 }

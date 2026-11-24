@@ -24,10 +24,12 @@ async function flux(url, corps, surEvenement) {
 }
 
 // ---------------------------------------------------------------- en-tête : vues et mode
+function ouvrirVue(vue) {
+  $$('.onglet').forEach((x) => { x.classList.toggle('actif', x.dataset.vue === vue); x.setAttribute('aria-pressed', x.dataset.vue === vue); });
+  ['lire', 'claude', 'banc'].forEach((v) => { $(`#vue-${v}`).hidden = v !== vue; });
+}
 $$('.onglet').forEach((b) => b.addEventListener('click', () => {
-  $$('.onglet').forEach((x) => { x.classList.toggle('actif', x === b); x.setAttribute('aria-pressed', x === b); });
-  $('#vue-lire').hidden = b.dataset.vue !== 'lire';
-  $('#vue-banc').hidden = b.dataset.vue !== 'banc';
+  ouvrirVue(b.dataset.vue);
   if (b.dataset.vue === 'banc') chargerComparaison();
 }));
 $$('.choix').forEach((b) => b.addEventListener('click', () => {
@@ -35,7 +37,7 @@ $$('.choix').forEach((b) => b.addEventListener('click', () => {
   $$('.choix').forEach((x) => { x.classList.toggle('actif', x === b); x.setAttribute('aria-checked', x === b); });
   $('#aide-mode').textContent = mode === 'direct'
     ? 'Appelle vraiment Claude : de 20 à 50 s par dossier selon la charge.'
-    : 'Réaffiche les réponses mesurées le 24/11, sans appel. Utile si le réseau lâche.';
+    : 'Réaffiche des réponses déjà mesurées, sans appel. Utile si le réseau lâche.';
 }));
 
 // ---------------------------------------------------------------- vue « lire »
@@ -186,10 +188,18 @@ $('#btn-lire').addEventListener('click', async () => {
   const texte = casChoisi ? cas.find((c) => c.id === casChoisi).texte : $('#texte-colle').value;
   if (!texte.trim()) { $('#notation').innerHTML = '<p class="erreur">Le dossier est vide. Choisis un dossier ou colle son texte.</p>'; return; }
   viderReleve(); enCours = true; $('#btn-lire').disabled = true; $('#btn-lire').textContent = 'Lecture en cours…';
-  let points = null, alertes = [], aFaire = [];
   try {
-    await flux('/api/lire', { texte, cas: casChoisi, mode }, (e) => {
-      if (e.etape === 'dossier') afficherFeuille(e.dossier);
+    await flux('/api/lire', { texte, cas: casChoisi, mode }, traiterLecture);
+  } catch (err) {
+    arreterChrono(); $('#notation').innerHTML = `<p class="erreur">${esc(err.message)}</p>`;
+  } finally {
+    enCours = false; $('#btn-lire').disabled = false; $('#btn-lire').textContent = 'Lire le dossier';
+  }
+});
+
+let lect = { points: null, alertes: [], aFaire: [] };
+function traiterLecture(e) {
+      if (e.etape === 'dossier') { afficherFeuille(e.dossier); lect = { points: null, alertes: [], aFaire: [] }; }
       if (e.etape === 'consigne') etape('consigne', 'fait', `${e.taille.toLocaleString('fr-FR')} caractères`);
       if (e.etape === 'appel') { if (e.statut === 'rejoue') etape('appel', 'fait', `rejoué, ${e.modele}`); else { etape('appel', 'encours', 'en cours'); demarrerChrono(); } }
       if (e.etape === 'reponse') { arreterChrono(); if (mode === 'direct') etape('appel', 'fait', e.modele || 'terminé'); etape('reponse', 'fait', `${sec(e.duree_s)}, ${euros(e.cout_usd)}`); dernierBrut = e.brut; $('#btn-brut').disabled = false; }
@@ -199,22 +209,16 @@ $('#btn-lire').addEventListener('click', async () => {
           ? `12 clés${e.sans_source.length ? `, ${e.sans_source.length} sans source` : ''}, ${expliques}/${x.a_expliquer} risques expliqués`
           : `${e.manquantes.length} clés manquantes`);
       }
-      if (e.etape === 'points') { points = e.points; alertes = e.alertes; aFaire = e.a_faire; afficherPoints(points, alertes, [], aFaire); if (!casChoisi) etape('notation', 'fait', 'pas de réponse attendue'); }
+      if (e.etape === 'points') { lect = { points: e.points, alertes: e.alertes, aFaire: e.a_faire }; afficherPoints(lect.points, lect.alertes, [], lect.aFaire); if (!casChoisi) etape('notation', 'fait', 'pas de réponse attendue'); }
       if (e.etape === 'notation') {
         etape('notation', 'fait', `${e.points}/36, ${e.inventions} invention${e.inventions > 1 ? 's' : ''}`);
-        afficherPoints(points, alertes, e.statuts_faux.map((f) => f.cle), aFaire);
+        afficherPoints(lect.points, lect.alertes, e.statuts_faux.map((f) => f.cle), lect.aFaire);
         $('#notation').innerHTML = `Comparé à la réponse attendue, écrite avant le premier passage : <b>${e.points} points sur 36</b>, `
           + `<b>${e.inventions} valeur${e.inventions > 1 ? 's' : ''} inventée${e.inventions > 1 ? 's' : ''}</b>, `
           + `<b>${e.statuts_faux.length} statut${e.statuts_faux.length > 1 ? 's' : ''} faux</b>. Clique sur un point pour voir sa source dans le dossier, et sur un risque pour savoir pourquoi.`;
       }
       if (e.etape === 'erreur') { arreterChrono(); etape('appel', 'echec', 'échec'); $('#notation').innerHTML = `<p class="erreur">${esc(e.message)}</p>`; }
-    });
-  } catch (err) {
-    arreterChrono(); $('#notation').innerHTML = `<p class="erreur">${esc(err.message)}</p>`;
-  } finally {
-    enCours = false; $('#btn-lire').disabled = false; $('#btn-lire').textContent = 'Lire le dossier';
-  }
-});
+}
 
 $('#btn-brut').addEventListener('click', () => {
   const pre = $('#brut');
@@ -297,4 +301,124 @@ $$('[data-banc]').forEach((btn) => btn.addEventListener('click', async () => {
   }
 }));
 
-chargerCas();
+// ---------------------------------------------------------------- vue « Dans Claude Code »
+const PHASE = { session: 'session', outil: 'choix', charge: 'charge', lu: 'lu', texte: 'texte', controle: 'controle' };
+const milliers = (n) => Number(n || 0).toLocaleString('fr-FR');
+let ficheClaude = [];
+
+function remplirSelectClaude() {
+  $('#claude-cas').innerHTML = cas.map((c) => `<option value="${c.id}">${c.id} · ${esc(c.titre)}</option>`).join('')
+    + '<option value="">Le dossier collé dans « Lire un dossier »</option>';
+  $('#claude-cas').value = casChoisi || 'cas-03';
+}
+
+function phase(nom, etat) {
+  const li = $(`#phases li[data-p="${nom}"]`); if (!li) return;
+  $$('#phases li.encours').forEach((x) => { if (x !== li) x.classList.replace('encours', 'fait'); });
+  li.className = etat;
+}
+
+function ajouterFil(html, classe = '') {
+  $('#fil .attente')?.remove();
+  const li = document.createElement('li'); li.className = classe; li.innerHTML = html;
+  $('#fil').append(li);
+  const z = $('.fil-zone'); z.scrollTo({ top: z.scrollHeight, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  return li;
+}
+
+function nomOutil(e) {
+  if (e.nom === 'Skill') return `Skill<span>(${esc(e.detail)})</span>`;
+  const court = e.detail.replace(/\\/g, '/').replace(/^.*\/skills\/lecture-dce\//, '');
+  return `${esc(e.nom)}<span>(${esc(court)})</span>`;
+}
+
+function traiterClaude(e) {
+  if (e.etape === 'dossier') ficheClaude.push(e);
+  if (e.etape === 'demande') {
+    ajouterFil(`<p>${esc(e.question)}</p><small>dossier joint · ${e.lignes} lignes</small>`, 'humain');
+    ajouterFil('Claude Code démarre…', 'attente');
+  }
+  if (e.etape === 'session') {
+    phase('session', 'fait');
+    ajouterFil(`Session ${esc(e.modele)} · ${milliers(e.skills)} skills installés, dont lecture-dce : ${e.present ? 'oui' : 'non'}`, 'systeme');
+    ajouterFil('Claude réfléchit…', 'attente');
+  }
+  if (e.etape === 'reflechit' && !$('#fil .attente')) ajouterFil('Claude réfléchit…', 'attente');
+  if (e.etape === 'outil') { phase(e.nom === 'Skill' ? 'choix' : 'lu', 'encours'); ajouterFil(nomOutil(e), 'outil'); }
+  if (e.etape === 'charge') {
+    phase('choix', 'fait'); phase('charge', 'fait');
+    const li = ajouterFil(`<span>Consigne du skill chargée : ${milliers(e.caracteres)} caractères</span> <button class="lien" type="button">voir le début</button><pre hidden></pre>`, 'retour');
+    $('pre', li).textContent = e.debut;
+    $('button', li).addEventListener('click', (ev) => { const p = $('pre', li); p.hidden = !p.hidden; ev.target.textContent = p.hidden ? 'voir le début' : 'masquer'; });
+  }
+  if (e.etape === 'lu') { phase('lu', 'fait'); ajouterFil(`${milliers(e.caracteres)} caractères lus`, 'retour'); }
+  if (e.etape === 'texte') {
+    phase('texte', 'fait');
+    const li = ajouterFil('<pre></pre>', 'reponse-claude'); $('pre', li).textContent = e.texte;
+    try { const m = e.texte.match(/\{[\s\S]*\}/); ficheClaude.push({ etape: 'reponse_brute', brut: JSON.parse(m[0]) }); } catch { /* le serveur le signale */ }
+  }
+  if (e.etape === 'resultat') {
+    ficheClaude.push(e);
+    ajouterFil(`${sec(e.duree_s)} · ${euros(e.cout_usd)} · ${e.tours} tours${e.rejoue ? ' · conversation enregistrée, rejouée' : ''}`, 'systeme');
+    ecart(e);
+  }
+  if (['controle', 'points', 'notation'].includes(e.etape)) { ficheClaude.push(e); phase('controle', 'fait'); }
+  if (e.etape === 'notation') {
+    $('#note-claude').innerHTML = `Même notation que le banc : <b>${e.points} points sur 36</b>, <b>${e.inventions} invention${e.inventions > 1 ? 's' : ''}</b>, <b>${e.statuts_faux.length} statut${e.statuts_faux.length > 1 ? 's' : ''} faux</b>.`;
+    $('#sortie-claude').hidden = false;
+  }
+  if (e.etape === 'fin' && $('#sortie-claude').hidden) { $('#note-claude').textContent = 'Dossier collé : pas de réponse attendue, donc pas de note.'; $('#sortie-claude').hidden = false; }
+  if (e.etape === 'erreur') { $('#fil .attente')?.remove(); ajouterFil(esc(e.message), 'erreur'); }
+}
+
+// L'écart avec la lecture directe (consigne injectée, un seul tour), mesuré sur le même dossier
+async function ecart(e) {
+  const c = $('#claude-cas').value;
+  if (!c) return;
+  const r = await (await fetch('/api/comparaison')).json().catch(() => null);
+  const ligne = r?.skill?.cas.find((x) => x.cas === c);
+  if (!ligne) return;
+  $('#ecart').hidden = false;
+  $('#ecart').innerHTML = `<h3>Face à « Lire un dossier »</h3><table>
+    <tr><th></th><th>Consigne injectée</th><th>Claude Code</th></tr>
+    <tr><td>Qui choisit la consigne</td><td>l'interface</td><td>Claude</td></tr>
+    <tr><td>Tours</td><td>1</td><td>${e.tours}</td></tr>
+    <tr><td>Durée</td><td>${sec(ligne.duree_s)}</td><td>${sec(e.duree_s)}</td></tr>
+    <tr><td>Coût</td><td>${euros(ligne.cout_usd)}</td><td>${euros(e.cout_usd)}</td></tr></table>
+    <p>Le surcoût paie le choix du skill et la lecture de la référence. En échange, le chargé d'études n'a rien à coller : il pose sa question.</p>`;
+}
+
+$('#form-claude').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  if (enCours) return;
+  const c = $('#claude-cas').value;
+  const texte = c ? cas.find((x) => x.id === c).texte : $('#texte-colle').value;
+  if (!texte.trim()) { ajouterFil('Aucun dossier collé dans « Lire un dossier ». Choisis un dossier de test ou colle d\'abord un texte.', 'erreur'); return; }
+  $('#fil').innerHTML = ''; $('#sortie-claude').hidden = true; $('#ecart').hidden = true; ficheClaude = [];
+  $$('#phases li').forEach((li) => { li.className = ''; });
+  enCours = true; $('#btn-claude').disabled = true; $('#btn-claude').textContent = mode === 'direct' ? 'Claude Code travaille…' : 'Rejeu…';
+  try {
+    await flux('/api/discussion', { texte, cas: c || null, mode, question: $('#claude-question').value }, traiterClaude);
+  } catch (err) {
+    ajouterFil(esc(err.message), 'erreur');
+  } finally {
+    enCours = false; $('#btn-claude').disabled = false; $('#btn-claude').textContent = 'Envoyer à Claude Code';
+  }
+});
+
+// La même réponse, dans la vue fiche : on rejoue ses étapes dans traiterLecture
+$('#btn-fiche').addEventListener('click', () => {
+  const c = $('#claude-cas').value;
+  casChoisi = c || null;
+  $$('#liste-cas button').forEach((b) => b.setAttribute('aria-current', b.dataset.cas === c));
+  ouvrirVue('lire'); viderReleve();
+  const res = ficheClaude.find((x) => x.etape === 'resultat'), brut = ficheClaude.find((x) => x.etape === 'reponse_brute');
+  etape('consigne', 'fait', 'choisie par Claude (skill)');
+  etape('appel', 'fait', `Claude Code, ${res ? res.tours : '?'} tours`);
+  ficheClaude.forEach((e) => {
+    if (e.etape === 'resultat') traiterLecture({ etape: 'reponse', duree_s: e.duree_s, cout_usd: e.cout_usd, brut: brut?.brut });
+    else if (e.etape !== 'reponse_brute') traiterLecture(e);
+  });
+});
+
+chargerCas().then(remplirSelectClaude);

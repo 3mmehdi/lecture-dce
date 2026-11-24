@@ -2,6 +2,12 @@
 
 Chaque version est évaluée sur les mêmes 5 dossiers, avec le même modèle (Claude Sonnet).
 
+## Interface, 25/11/2026 : le skill dans Claude Code
+
+- Nouvel onglet *Dans Claude Code* : le skill installé est appelé par `claude -p` avec une simple question, sans consigne. Le fil montre le choix du skill, le chargement de `SKILL.md`, la lecture de `references/points.md`, puis la réponse, contrôlée et notée comme au banc.
+- Mesuré : cas-02 en 28 s, cas-03 en 36 s ; 0,21 à 0,23 $ (contre 0,19 $ en consigne injectée sur cas-03), 4 tours, 36/36 et 0 invention sur les deux. Le skill n'a pas changé.
+- Les conversations sont enregistrées déjà traduites (aucun chemin ni configuration du poste) dans `evals/discussions/`, pour le mode Rejouer.
+
 ## 0.3.0, 24/11/2026 : expliquer chaque risque
 
 - Chaque point `risque`, `eliminatoire` ou `a_verifier` porte `pourquoi` (règle déclenchée, coût calculé avec les seuls chiffres du dossier), `que_faire` (avec la date du dossier) et, quand elle peut lever le doute, `question` (prête à envoyer à l'acheteur, articles cités).

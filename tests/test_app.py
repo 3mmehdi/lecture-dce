@@ -73,6 +73,22 @@ class Explications(unittest.TestCase):
             self.assertEqual(c["explications"]["manquantes"], [], cas)
             self.assertEqual(c["explications"]["questions_manquantes"], [], cas)
 
+class Discussion(unittest.TestCase):
+    def test_traduction_du_flux_claude_code(self):
+        vus, sortie = set(), []
+        for e in [
+            {"type": "system", "subtype": "hook_started"},
+            {"type": "system", "subtype": "init", "model": "m", "skills": ["autre", "lecture-dce"]},
+            {"type": "assistant", "message": {"content": [{"type": "thinking", "thinking": ""}]}},
+            {"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "Skill", "input": {"skill": "lecture-dce"}}]}},
+            {"type": "user", "message": {"content": [{"type": "text", "text": "Base directory for this skill: " + app.MAISON + "\\.claude\\skills\\lecture-dce"}]}},
+            {"type": "result", "duration_ms": 36376, "total_cost_usd": 0.23, "num_turns": 4, "is_error": False},
+        ]:
+            sortie += list(app.traduire(e, vus))
+        self.assertEqual([x["etape"] for x in sortie], ["session", "reflechit", "outil", "charge", "resultat"])
+        self.assertTrue(sortie[0]["present"])
+        self.assertNotIn(app.MAISON, sortie[3]["debut"])  # aucun chemin personnel à l'écran
+
 class Routes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -102,6 +118,15 @@ class Routes(unittest.TestCase):
         self.assertTrue(delai["pourquoi"] and delai["que_faire"] and delai["question"])
         a_faire = next(e for e in ev if e["etape"] == "points")["a_faire"]
         self.assertTrue(a_faire and all("quand" in t and "lignes" in t for t in a_faire))
+
+    def test_discussion_rejouee(self):
+        if not (app.DISCUSSIONS / "cas-03.json").exists(): self.skipTest("aucune conversation enregistrée")
+        texte = (app.EV / "cas-03" / "dce.md").read_text(encoding="utf-8")
+        ev = self.post("/api/discussion", {"texte": texte, "cas": "cas-03", "mode": "rejouer"})
+        etapes = [e["etape"] for e in ev]
+        self.assertEqual(etapes[:2], ["dossier", "demande"])
+        self.assertIn("charge", etapes); self.assertEqual(etapes[-1], "fin")
+        self.assertEqual(next(e for e in ev if e["etape"] == "notation")["inventions"], 0)
 
     def test_rejouer_dossier_colle_refuse(self):
         ev = self.post("/api/lire", {"texte": DOSSIER, "mode": "rejouer"})

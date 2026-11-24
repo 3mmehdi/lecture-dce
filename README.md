@@ -36,10 +36,21 @@ python app.py
 Puis ouvrir http://127.0.0.1:8790. Rien à installer : bibliothèque standard seulement, et le serveur n'écoute que sur le poste.
 
 - **Lire un dossier** : choisir un des 5 dossiers (ou coller le texte d'un autre), lancer la lecture. Les 12 points s'affichent avec leur statut, les alertes et les actions datées avant la remise. Un clic sur un point allume, dans le dossier, l'article qu'il cite : on voit d'où vient chaque valeur. Sur un risque, le clic ouvre aussi le pourquoi, l'action à mener et la question à copier pour l'acheteur. En bas, les étapes (consigne, appel au modèle, réponse, contrôle du format, notation) avec leur durée et leur coût, et la réponse brute du modèle.
+- **Dans Claude Code** : le même skill, utilisé comme un chargé d'études le ferait. L'interface envoie seulement une question (« Analyse ce DCE… ») et le dossier à `claude -p`, sans consigne. Le fil montre Claude qui choisit le skill d'après sa description, charge `SKILL.md`, lit `references/points.md` à la demande, puis répond. À côté : les étapes, et l'écart avec la lecture directe (tours, durée, coût). Un bouton ouvre la même réponse dans la vue *Lire un dossier*, avec la même note. Il faut d'abord installer le skill (voir plus bas).
 - **Évaluer le skill** : la consigne simple et le skill côte à côte, dossier par dossier, et la liste des statuts que le skill corrige. Chaque version peut être relancée.
-- **En direct ou Rejouer** : *En direct* appelle vraiment Claude (de 20 à 50 s par dossier). *Rejouer* réaffiche instantanément les réponses mesurées, sans appel.
+- **En direct ou Rejouer** : *En direct* appelle vraiment Claude (de 20 à 50 s par dossier). *Rejouer* réaffiche les réponses mesurées, sans appel (pour *Dans Claude Code*, les conversations enregistrées dans `evals/discussions/`).
 
 L'interface réutilise les fonctions de `evals/evaluer.py` : le score affiché est exactement celui du banc. Tests : `python -m unittest discover -s tests`.
+
+## Installer le skill dans Claude Code
+
+```bash
+mkdir -p ~/.claude/skills/lecture-dce/references
+cp SKILL.md ~/.claude/skills/lecture-dce/
+cp references/points.md ~/.claude/skills/lecture-dce/references/
+```
+
+Puis, dans une nouvelle session Claude Code, coller un DCE et demander « analyse ce DCE » : le skill se déclenche seul. Testé sur du texte ; pas encore mesuré sur un DCE en PDF.
 
 ## Lancer l'évaluation
 
@@ -95,6 +106,7 @@ lecture-dce/
     resultats-v0.1.json   consigne simple
     resultats-v0.2.json   skill, sans explications
     resultats-v0.3.json   skill, avec explications (rejoué par l'interface)
+    discussions/          conversations Claude Code enregistrées (rejouées par l'interface)
   app.py, ui/             l'interface locale (http://127.0.0.1:8790)
   tests/                  tests de l'interface
   CHANGELOG.md            chaque version et son score
