@@ -1,0 +1,111 @@
+{
+ "date_limite": {
+  "mots": [
+   "09/04/2027",
+   "12"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "5"
+ },
+ "visite": {
+  "mots": [
+   "obligatoire"
+  ],
+  "statuts": [
+   "eliminatoire"
+  ],
+  "source": "2"
+ },
+ "criteres": {
+  "mots": [
+   "55",
+   "45"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "6"
+ },
+ "penalites_retard": {
+  "mots": [
+   "CCAG"
+  ],
+  "statuts": [
+   "ok",
+   "a_verifier",
+   "risque"
+  ],
+  "source": "8"
+ },
+ "retenue_garantie": {
+  "mots": [
+   "5"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "9"
+ },
+ "avance": {
+  "mots": [],
+  "statuts": [
+   "non_trouve"
+  ],
+  "source": ""
+ },
+ "revision_prix": {
+  "mots": [
+   "BT01"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "4"
+ },
+ "variantes": {
+  "mots": [],
+  "statuts": [
+   "non_trouve"
+  ],
+  "source": ""
+ },
+ "delai_execution": {
+  "mots": [
+   "16"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "3"
+ },
+ "sous_traitance": {
+  "mots": [],
+  "statuts": [
+   "non_trouve"
+  ],
+  "source": ""
+ },
+ "assurances": {
+  "mots": [
+   "5 000 000"
+  ],
+  "statuts": [
+   "ok",
+   "risque"
+  ],
+  "source": "12"
+ },
+ "pieces_candidature": {
+  "mots": [
+   "DC1",
+   "DC2"
+  ],
+  "statuts": [
+   "ok",
+   "eliminatoire"
+  ],
+  "source": "7"
+ }
+}

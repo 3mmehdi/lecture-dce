@@ -1,0 +1,110 @@
+{
+ "date_limite": {
+  "mots": [
+   "26/02/2027",
+   "16"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "7"
+ },
+ "visite": {
+  "mots": [
+   "facultative"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "3"
+ },
+ "criteres": {
+  "mots": [
+   "60",
+   "40"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "9"
+ },
+ "penalites_retard": {
+  "mots": [
+   "1/3000",
+   "10"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "14"
+ },
+ "retenue_garantie": {
+  "mots": [
+   "5"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "9"
+ },
+ "avance": {
+  "mots": [],
+  "statuts": [
+   "non_trouve"
+  ],
+  "source": ""
+ },
+ "revision_prix": {
+  "mots": [
+   "fermes",
+   "actualisables"
+  ],
+  "statuts": [
+   "ok",
+   "risque"
+  ],
+  "source": "6"
+ },
+ "variantes": {
+  "mots": [
+   "aucune"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "2"
+ },
+ "delai_execution": {
+  "mots": [
+   "10 mois"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "4"
+ },
+ "sous_traitance": {
+  "mots": [
+   "CCAG"
+  ],
+  "statuts": [
+   "ok",
+   "a_verifier"
+  ],
+  "source": "16"
+ },
+ "assurances": {
+  "mots": [],
+  "statuts": [
+   "non_trouve"
+  ],
+  "source": ""
+ },
+ "pieces_candidature": {
+  "mots": [],
+  "statuts": [
+   "non_trouve"
+  ],
+  "source": ""
+ }
+}

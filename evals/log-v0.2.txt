@@ -1,0 +1,6 @@
+cas-01 36/36 inventions: 0 15s
+cas-02 35/36 inventions: 0 14s
+cas-03 36/36 inventions: 0 14s
+cas-04 35/36 inventions: 0 16s
+cas-05 36/36 inventions: 0 16s
+SCORE v0.2 98.9 % · inventions 0

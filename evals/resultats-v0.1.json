@@ -1,0 +1,429 @@
+{
+ "version": "v0.1",
+ "modele": "sonnet",
+ "cas": {
+  "cas-01": {
+   "points": 34,
+   "sur": 36,
+   "inventions": 0,
+   "duree_s": 11.1,
+   "cout_usd": 0.1314906,
+   "detail": {
+    "date_limite": 3,
+    "visite": 3,
+    "criteres": 3,
+    "penalites_retard": 3,
+    "retenue_garantie": 3,
+    "avance": 3,
+    "revision_prix": 3,
+    "variantes": 3,
+    "delai_execution": 2,
+    "sous_traitance": 2,
+    "assurances": 3,
+    "pieces_candidature": 3
+   },
+   "reponse": {
+    "date_limite": {
+     "valeur": "15/01/2027 à 12h00",
+     "source": "RC art. 6.1",
+     "statut": "ok"
+    },
+    "visite": {
+     "valeur": "Visite du site obligatoire ; l'attestation de visite doit être jointe à l'offre. Les dates et modalités de visite ne figurent pas dans les extraits fournis.",
+     "source": "RC art. 4.3",
+     "statut": "eliminatoire"
+    },
+    "criteres": {
+     "valeur": "Prix 50 %, valeur technique 40 %, performance environnementale 10 %",
+     "source": "RC art. 8",
+     "statut": "ok"
+    },
+    "penalites_retard": {
+     "valeur": "1/1000 du montant du marché par jour calendaire de retard, sans plafond",
+     "source": "CCAP art. 20.1",
+     "statut": "risque"
+    },
+    "retenue_garantie": {
+     "valeur": "5 %, remplaçable par une garantie à première demande",
+     "source": "CCAP art. 11",
+     "statut": "ok"
+    },
+    "avance": {
+     "valeur": "10 %, versée sans constitution de garantie",
+     "source": "CCAP art. 5.2",
+     "statut": "ok"
+    },
+    "revision_prix": {
+     "valeur": "Prix révisables mensuellement selon l'index BT01",
+     "source": "CCAP art. 10.4",
+     "statut": "ok"
+    },
+    "variantes": {
+     "valeur": "Autorisées sur le plancher bas uniquement",
+     "source": "RC art. 3.5",
+     "statut": "ok"
+    },
+    "delai_execution": {
+     "valeur": "18 mois, période de préparation de 2 mois comprise (soit 16 mois de travaux effectifs)",
+     "source": "AE art. 4",
+     "statut": "a_verifier"
+    },
+    "sous_traitance": {
+     "valeur": "Tout sous-traitant est déclaré et agréé avant le début de son intervention ; paiement direct au-delà de 600 euros TTC",
+     "source": "CCAP art. 3.2",
+     "statut": "a_verifier"
+    },
+    "assurances": {
+     "valeur": "Responsabilité civile et décennale, attestations exigées",
+     "source": "CCAP art. 12 ; RC art. 5 (attestation décennale en cours de validité)",
+     "statut": "ok"
+    },
+    "pieces_candidature": {
+     "valeur": "DC1, DC2, attestation d'assurance décennale en cours de validité (l'attestation de visite est à joindre à l'offre)",
+     "source": "RC art. 5 ; RC art. 4.3",
+     "statut": "ok"
+    }
+   },
+   "points_grille_v2": 34
+  },
+  "cas-02": {
+   "points": 32,
+   "sur": 36,
+   "inventions": 0,
+   "duree_s": 14.8,
+   "cout_usd": 0.1368674,
+   "detail": {
+    "date_limite": 3,
+    "visite": 3,
+    "criteres": 2,
+    "penalites_retard": 2,
+    "retenue_garantie": 2,
+    "avance": 3,
+    "revision_prix": 2,
+    "variantes": 3,
+    "delai_execution": 3,
+    "sous_traitance": 3,
+    "assurances": 3,
+    "pieces_candidature": 3
+   },
+   "reponse": {
+    "date_limite": {
+     "valeur": "26/02/2027 à 16h00, remise sur la plateforme de dématérialisation",
+     "source": "RC art. 7",
+     "statut": "ok"
+    },
+    "visite": {
+     "valeur": "Visite facultative le 04/02/2027",
+     "source": "RC art. 3",
+     "statut": "ok"
+    },
+    "criteres": {
+     "valeur": "Valeur technique 60 %, prix 40 %. Les sous-critères de la valeur technique ne sont pas détaillés.",
+     "source": "RC art. 9",
+     "statut": "a_verifier"
+    },
+    "penalites_retard": {
+     "valeur": "1/3000 du montant HT du marché par jour de retard, plafonnées à 10 % du montant du marché",
+     "source": "CCAP art. 14",
+     "statut": "risque"
+    },
+    "retenue_garantie": {
+     "valeur": "5 %. Le dossier ne dit pas si elle peut être remplacée par une garantie à première demande ou une caution.",
+     "source": "CCAP art. 9",
+     "statut": "a_verifier"
+    },
+    "avance": {
+     "valeur": null,
+     "source": null,
+     "statut": "non_trouve"
+    },
+    "revision_prix": {
+     "valeur": "Prix fermes et actualisables : pas de révision, seulement une actualisation. La date de référence des prix (mois zéro) et l'index ne sont pas précisés. Pas de révision sur 10 mois de gros œuvre, d'où un risque en cas de hausse des matériaux.",
+     "source": "CCAP art. 6",
+     "statut": "risque"
+    },
+    "variantes": {
+     "valeur": "Aucune variante admise",
+     "source": "RC art. 2",
+     "statut": "ok"
+    },
+    "delai_execution": {
+     "valeur": "10 mois à compter de l'ordre de service de démarrage. La période de préparation n'est pas précisée.",
+     "source": "CCAP art. 4",
+     "statut": "ok"
+    },
+    "sous_traitance": {
+     "valeur": "Renvoi au CCAG Travaux, sans précision propre au marché",
+     "source": "CCAP art. 16",
+     "statut": "a_verifier"
+    },
+    "assurances": {
+     "valeur": null,
+     "source": null,
+     "statut": "non_trouve"
+    },
+    "pieces_candidature": {
+     "valeur": null,
+     "source": null,
+     "statut": "non_trouve"
+    }
+   },
+   "points_grille_v2": 33
+  },
+  "cas-03": {
+   "points": 34,
+   "sur": 36,
+   "inventions": 0,
+   "duree_s": 16.2,
+   "cout_usd": 0.1670034,
+   "detail": {
+    "date_limite": 3,
+    "visite": 3,
+    "criteres": 3,
+    "penalites_retard": 3,
+    "retenue_garantie": 3,
+    "avance": 3,
+    "revision_prix": 3,
+    "variantes": 3,
+    "delai_execution": 2,
+    "sous_traitance": 3,
+    "assurances": 2,
+    "pieces_candidature": 3
+   },
+   "reponse": {
+    "date_limite": {
+     "valeur": "05/03/2027 à 11h30",
+     "source": "RC, art. 2.1",
+     "statut": "ok"
+    },
+    "visite": {
+     "valeur": "Sans objet : pas de visite prévue",
+     "source": "RC, art. 2.3",
+     "statut": "ok"
+    },
+    "criteres": {
+     "valeur": "Prix 60 %, valeur technique 30 %, délai 10 %",
+     "source": "RC, art. 5",
+     "statut": "ok"
+    },
+    "penalites_retard": {
+     "valeur": "500 € HT par jour calendaire. Aucun plafond mentionné dans les extraits fournis.",
+     "source": "CCAP, art. 8",
+     "statut": "risque"
+    },
+    "retenue_garantie": {
+     "valeur": "5 %",
+     "source": "CCAP, art. 4.6",
+     "statut": "ok"
+    },
+    "avance": {
+     "valeur": "5 %, sous réserve d'une garantie à première demande",
+     "source": "CCAP, art. 4.2",
+     "statut": "ok"
+    },
+    "revision_prix": {
+     "valeur": "Prix fermes, non actualisables et non révisables, alors que le chantier dure 12 à 14 mois. L'entreprise porte seule le risque de hausse des coûts.",
+     "source": "CCAP, art. 3.1",
+     "statut": "risque"
+    },
+    "variantes": {
+     "valeur": "Interdites",
+     "source": "RC, art. 1.4",
+     "statut": "ok"
+    },
+    "delai_execution": {
+     "valeur": "Contradiction entre le CCAP (12 mois, préparation incluse) et l'acte d'engagement (14 mois). Si le délai de 14 mois est retenu, il dépasse de 2 mois le délai du CCAP. Les pénalités de 500 €/jour pourraient alors s'appliquer dès le 12e mois. Le délai compte aussi pour 10 % de la note.",
+     "source": "CCAP, art. 2.2 ; Acte d'engagement, art. 3 ; RC, art. 5",
+     "statut": "risque"
+    },
+    "sous_traitance": {
+     "valeur": "Aucune clause sur la sous-traitance dans les extraits fournis",
+     "source": "Non applicable",
+     "statut": "non_trouve"
+    },
+    "assurances": {
+     "valeur": "Garantie décennale d'au moins 2 000 000 € par sinistre. Aucune autre assurance mentionnée (responsabilité civile, tous risques chantier).",
+     "source": "CCAP, art. 10",
+     "statut": "a_verifier"
+    },
+    "pieces_candidature": {
+     "valeur": "DC1, DC2 et Kbis de moins de 3 mois. Toute pièce manquante rend la candidature irrecevable.",
+     "source": "RC, art. 4",
+     "statut": "eliminatoire"
+    }
+   },
+   "points_grille_v2": 34
+  },
+  "cas-04": {
+   "points": 35,
+   "sur": 36,
+   "inventions": 0,
+   "duree_s": 13.4,
+   "cout_usd": 0.1579403,
+   "detail": {
+    "date_limite": 3,
+    "visite": 2,
+    "criteres": 3,
+    "penalites_retard": 3,
+    "retenue_garantie": 3,
+    "avance": 3,
+    "revision_prix": 3,
+    "variantes": 3,
+    "delai_execution": 3,
+    "sous_traitance": 3,
+    "assurances": 3,
+    "pieces_candidature": 3
+   },
+   "reponse": {
+    "date_limite": {
+     "valeur": "19/03/2027 à 17h00",
+     "source": "RC art. 6",
+     "statut": "ok"
+    },
+    "visite": {
+     "valeur": "Vivement conseillée, non obligatoire",
+     "source": "RC art. 3",
+     "statut": "ok"
+    },
+    "criteres": {
+     "valeur": "Prix 45 %, valeur technique 45 %, gestion des déchets 10 %",
+     "source": "RC art. 7",
+     "statut": "ok"
+    },
+    "penalites_retard": {
+     "valeur": "1/1000 du montant par jour de retard, plafonnées à 5 % du montant",
+     "source": "CCAP art. 11",
+     "statut": "risque"
+    },
+    "retenue_garantie": {
+     "valeur": "3 %",
+     "source": "CCAP art. 7",
+     "statut": "ok"
+    },
+    "avance": {
+     "valeur": "20 % pour les PME, 5 % dans les autres cas",
+     "source": "CCAP art. 5",
+     "statut": "ok"
+    },
+    "revision_prix": {
+     "valeur": "Prix révisables, index BT07",
+     "source": "CCAP art. 6",
+     "statut": "ok"
+    },
+    "variantes": {
+     "valeur": "Une variante autorisée, sur le traitement anticorrosion",
+     "source": "RC art. 4",
+     "statut": "ok"
+    },
+    "delai_execution": {
+     "valeur": null,
+     "source": null,
+     "statut": "non_trouve"
+    },
+    "sous_traitance": {
+     "valeur": "Limitée à 30 % du montant du lot",
+     "source": "CCAP art. 9",
+     "statut": "risque"
+    },
+    "assurances": {
+     "valeur": null,
+     "source": null,
+     "statut": "non_trouve"
+    },
+    "pieces_candidature": {
+     "valeur": null,
+     "source": null,
+     "statut": "non_trouve"
+    }
+   },
+   "points_grille_v2": 36
+  },
+  "cas-05": {
+   "points": 34,
+   "sur": 36,
+   "inventions": 0,
+   "duree_s": 16.8,
+   "cout_usd": 0.167205,
+   "detail": {
+    "date_limite": 3,
+    "visite": 3,
+    "criteres": 3,
+    "penalites_retard": 3,
+    "retenue_garantie": 3,
+    "avance": 3,
+    "revision_prix": 3,
+    "variantes": 3,
+    "delai_execution": 3,
+    "sous_traitance": 3,
+    "assurances": 2,
+    "pieces_candidature": 2
+   },
+   "reponse": {
+    "date_limite": {
+     "valeur": "09/04/2027 à 12h00",
+     "source": "RC art. 5",
+     "statut": "ok"
+    },
+    "visite": {
+     "valeur": "Visite obligatoire. Une attestation de visite signée par le maître d'ouvrage doit être remise avec l'offre. Toute offre sans attestation est rejetée. Date et modalités de la visite non précisées dans l'extrait.",
+     "source": "RC art. 2",
+     "statut": "eliminatoire"
+    },
+    "criteres": {
+     "valeur": "Valeur technique 55 %, prix 45 %. Les sous-critères de la valeur technique ne sont pas détaillés.",
+     "source": "RC art. 6",
+     "statut": "ok"
+    },
+    "penalites_retard": {
+     "valeur": "Application des pénalités du CCAG Travaux. Le taux et le plafond ne sont pas repris dans le dossier.",
+     "source": "CCAP art. 8",
+     "statut": "a_verifier"
+    },
+    "retenue_garantie": {
+     "valeur": "5 %",
+     "source": "CCAP art. 9",
+     "statut": "ok"
+    },
+    "avance": {
+     "valeur": "Aucune mention d'avance dans l'extrait fourni.",
+     "source": "Aucune",
+     "statut": "non_trouve"
+    },
+    "revision_prix": {
+     "valeur": "Prix révisables selon l'index BT01. La formule et le mois zéro ne sont pas précisés.",
+     "source": "CCAP art. 4",
+     "statut": "ok"
+    },
+    "variantes": {
+     "valeur": "Aucune mention des variantes ou options dans l'extrait fourni.",
+     "source": "Aucune",
+     "statut": "non_trouve"
+    },
+    "delai_execution": {
+     "valeur": "16 mois. La date de démarrage et la répartition entre préparation et exécution ne sont pas précisées.",
+     "source": "CCAP art. 3",
+     "statut": "ok"
+    },
+    "sous_traitance": {
+     "valeur": "Aucune mention de la sous-traitance dans l'extrait fourni.",
+     "source": "Aucune",
+     "statut": "non_trouve"
+    },
+    "assurances": {
+     "valeur": "Responsabilité civile professionnelle de 5 000 000 € et assurance décennale. Une attestation d'assurance est exigée dans le dossier de candidature. Il faut vérifier que les contrats actuels atteignent ce plafond de 5 M€.",
+     "source": "CCAP art. 12 ; RC art. 7",
+     "statut": "a_verifier"
+    },
+    "pieces_candidature": {
+     "valeur": "DC1, DC2, références de moins de 5 ans, attestation d'assurance. À ajouter : l'attestation de visite signée, exigée par l'art. 2 du RC mais absente de la liste de l'art. 7.",
+     "source": "RC art. 7 et art. 2",
+     "statut": "risque"
+    }
+   },
+   "points_grille_v2": 34
+  }
+ },
+ "score": 93.9,
+ "inventions": 0,
+ "score_grille_v2": 95.0
+}

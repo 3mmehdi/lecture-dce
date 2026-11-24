@@ -1,0 +1,115 @@
+{
+ "date_limite": {
+  "mots": [
+   "05/03/2027",
+   "11"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "2.1"
+ },
+ "visite": {
+  "mots": [],
+  "statuts": [
+   "ok",
+   "non_trouve"
+  ],
+  "source": ""
+ },
+ "criteres": {
+  "mots": [
+   "60",
+   "30",
+   "10"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "5"
+ },
+ "penalites_retard": {
+  "mots": [
+   "500"
+  ],
+  "statuts": [
+   "ok",
+   "risque"
+  ],
+  "source": "8"
+ },
+ "retenue_garantie": {
+  "mots": [
+   "5"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "4.6"
+ },
+ "avance": {
+  "mots": [
+   "5",
+   "première demande"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "4.2"
+ },
+ "revision_prix": {
+  "mots": [
+   "fermes"
+  ],
+  "statuts": [
+   "risque"
+  ],
+  "source": "3.1"
+ },
+ "variantes": {
+  "mots": [
+   "interdit"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "1.4"
+ },
+ "delai_execution": {
+  "mots": [
+   "12",
+   "14"
+  ],
+  "statuts": [
+   "a_verifier"
+  ],
+  "source": "2.2"
+ },
+ "sous_traitance": {
+  "mots": [],
+  "statuts": [
+   "non_trouve"
+  ],
+  "source": ""
+ },
+ "assurances": {
+  "mots": [
+   "2 000 000"
+  ],
+  "statuts": [
+   "ok",
+   "risque"
+  ],
+  "source": "10"
+ },
+ "pieces_candidature": {
+  "mots": [
+   "DC1",
+   "Kbis"
+  ],
+  "statuts": [
+   "eliminatoire"
+  ],
+  "source": "4"
+ }
+}

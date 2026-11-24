@@ -1,0 +1,110 @@
+{
+ "date_limite": {
+  "mots": [
+   "19/03/2027",
+   "17"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "6"
+ },
+ "visite": {
+  "mots": [
+   "pas obligatoire|non obligatoire"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "3"
+ },
+ "criteres": {
+  "mots": [
+   "45",
+   "10"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "7"
+ },
+ "penalites_retard": {
+  "mots": [
+   "1/1000",
+   "5"
+  ],
+  "statuts": [
+   "ok",
+   "risque"
+  ],
+  "source": "11"
+ },
+ "retenue_garantie": {
+  "mots": [
+   "3"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "7"
+ },
+ "avance": {
+  "mots": [
+   "20",
+   "5"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "5"
+ },
+ "revision_prix": {
+  "mots": [
+   "BT07"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "6"
+ },
+ "variantes": {
+  "mots": [
+   "anticorrosion"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "4"
+ },
+ "delai_execution": {
+  "mots": [],
+  "statuts": [
+   "non_trouve"
+  ],
+  "source": ""
+ },
+ "sous_traitance": {
+  "mots": [
+   "30"
+  ],
+  "statuts": [
+   "ok",
+   "risque"
+  ],
+  "source": "9"
+ },
+ "assurances": {
+  "mots": [],
+  "statuts": [
+   "non_trouve"
+  ],
+  "source": ""
+ },
+ "pieces_candidature": {
+  "mots": [],
+  "statuts": [
+   "non_trouve"
+  ],
+  "source": ""
+ }
+}

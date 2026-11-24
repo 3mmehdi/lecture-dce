@@ -1,0 +1,115 @@
+{
+ "date_limite": {
+  "mots": [
+   "15/01/2027",
+   "12"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "6.1"
+ },
+ "visite": {
+  "mots": [
+   "obligatoire"
+  ],
+  "statuts": [
+   "eliminatoire"
+  ],
+  "source": "4.3"
+ },
+ "criteres": {
+  "mots": [
+   "50",
+   "40",
+   "10"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "8"
+ },
+ "penalites_retard": {
+  "mots": [
+   "1/1000"
+  ],
+  "statuts": [
+   "risque"
+  ],
+  "source": "20.1"
+ },
+ "retenue_garantie": {
+  "mots": [
+   "5"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "11"
+ },
+ "avance": {
+  "mots": [
+   "10"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "5.2"
+ },
+ "revision_prix": {
+  "mots": [
+   "BT01"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "10.4"
+ },
+ "variantes": {
+  "mots": [
+   "plancher"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "3.5"
+ },
+ "delai_execution": {
+  "mots": [
+   "18"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "4"
+ },
+ "sous_traitance": {
+  "mots": [
+   "600"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "3.2"
+ },
+ "assurances": {
+  "mots": [
+   "décennale"
+  ],
+  "statuts": [
+   "ok"
+  ],
+  "source": "12"
+ },
+ "pieces_candidature": {
+  "mots": [
+   "DC1",
+   "DC2"
+  ],
+  "statuts": [
+   "ok",
+   "eliminatoire"
+  ],
+  "source": "5"
+ }
+}
