@@ -3,3 +3,4 @@ __pycache__/
 evals/resultats-*.json
 !evals/resultats-v0.1.json
 !evals/resultats-v0.2.json
+!evals/resultats-v0.3.json

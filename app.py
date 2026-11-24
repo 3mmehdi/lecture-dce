@@ -10,6 +10,7 @@ sys.path.insert(0, str(EV))
 import evaluer as ev  # noqa: E402  (SKILL, NAIF, CLES, appeler, noter)
 
 HOTE, PORT = "127.0.0.1", 8790
+VERSION_SKILL = "v0.3"  # la version rejouée et comparée à la consigne simple
 STATUTS = {"ok", "risque", "eliminatoire", "a_verifier", "non_trouve"}
 NOMS = {"date_limite": "Date limite", "visite": "Visite de site", "criteres": "Critères", "penalites_retard": "Pénalités de retard",
         "retenue_garantie": "Retenue de garantie", "avance": "Avance", "revision_prix": "Révision des prix", "variantes": "Variantes",
@@ -80,10 +81,19 @@ def noter(rep, cas):
     pts, inv, det = ev.noter(rep, att)
     return {"points": pts, "sur": 36, "inventions": inv, "detail": det, "statuts_faux": statuts_faux(rep, att)}
 
-def points_affiches(rep, dossier):
-    return [{"cle": k, "nom": NOMS[k], "valeur": (rep.get(k) or {}).get("valeur", ""), "source": (rep.get(k) or {}).get("source", ""),
-             "statut": (rep.get(k) or {}).get("statut", ""), "lignes": lignes_source((rep.get(k) or {}).get("source", ""), dossier)}
-            for k in ev.CLES]
+def points_affiches(rep, dossier, absents=()):
+    out = []
+    for k in ev.CLES:
+        r = rep.get(k) or {}
+        out.append({"cle": k, "nom": NOMS[k], "valeur": r.get("valeur", ""), "source": r.get("source", ""), "statut": r.get("statut", ""),
+                    "lignes": lignes_source(r.get("source", ""), dossier),
+                    "pourquoi": r.get("pourquoi", ""), "que_faire": r.get("que_faire", ""), "question": r.get("question", ""),
+                    "a_relire": sorted({a["chiffre"] for a in absents if a["cle"] == k})})
+    return out
+
+def a_faire_affiche(rep, dossier):
+    return [{"quand": (t or {}).get("quand", ""), "quoi": (t or {}).get("quoi", ""), "source": (t or {}).get("source", ""),
+             "lignes": lignes_source((t or {}).get("source", ""), dossier)} for t in (rep.get("a_faire") or []) if isinstance(t, dict)]
 
 # ---------------------------------------------------------------- déroulés (flux d'étapes)
 def derouler_lecture(texte, cas, mode, modele="sonnet"):
@@ -92,7 +102,7 @@ def derouler_lecture(texte, cas, mode, modele="sonnet"):
     yield {"etape": "dossier", "dossier": dossier}
     yield {"etape": "consigne", "taille": len(ev.SKILL) + len(texte), "detail": "SKILL.md + references/points.md + le dossier"}
     if mode == "rejouer":
-        r = resultats("v0.2")
+        r = resultats(VERSION_SKILL)
         if not cas or not r or cas not in r["cas"]:
             yield {"etape": "erreur", "message": "Le mode Rejouer ne couvre que les 5 dossiers de test. Passe en direct pour un dossier collé."}
             return
@@ -107,8 +117,10 @@ def derouler_lecture(texte, cas, mode, modele="sonnet"):
             yield {"etape": "erreur", "message": f"L'appel au modèle a échoué : {type(e).__name__}. Vérifie que « claude --version » répond, ou passe en mode Rejouer."}
             return
     yield {"etape": "reponse", "duree_s": round(duree, 1), "cout_usd": cout, "brut": rep}
-    yield {"etape": "controle", **controler(rep)}
-    yield {"etape": "points", "points": points_affiches(rep, dossier), "alertes": rep.get("alertes", [])}
+    expl = ev.controler_explications(rep, texte)
+    yield {"etape": "controle", **controler(rep), "explications": expl}
+    yield {"etape": "points", "points": points_affiches(rep, dossier, expl["chiffres_absents"]), "alertes": rep.get("alertes", []),
+           "a_faire": a_faire_affiche(rep, dossier)}
     if cas:
         yield {"etape": "notation", **noter(rep, cas)}
     yield {"etape": "fin"}
@@ -170,7 +182,7 @@ class Gestion(BaseHTTPRequestHandler):
         if p == "/api/cas": return self._json(cas_disponibles())
         if p == "/api/comparaison":
             out = {}
-            for v in ("v0.1", "v0.2"):
+            for v in ("v0.1", VERSION_SKILL):
                 r = resultats(v)
                 if not r: continue
                 lignes = []
@@ -178,7 +190,7 @@ class Gestion(BaseHTTPRequestHandler):
                     n = noter(c["reponse"], cas)
                     lignes.append({"cas": cas, "duree_s": c["duree_s"], "cout_usd": c["cout_usd"], **n})
                 tot = sum(l["points"] for l in lignes)
-                out[v] = {"modele": r.get("modele"), "score": round(100 * tot / (36 * len(lignes)), 1),
+                out["v0.1" if v == "v0.1" else "skill"] = {"version": v, "modele": r.get("modele"), "score": round(100 * tot / (36 * len(lignes)), 1),
                           "inventions": sum(l["inventions"] for l in lignes),
                           "statuts_faux": sum(len(l["statuts_faux"]) for l in lignes), "cas": lignes}
             return self._json(out)
@@ -197,7 +209,7 @@ class Gestion(BaseHTTPRequestHandler):
             if not texte: return self._json({"message": "Le dossier est vide. Choisis un dossier ou colle son texte."}, 400)
             return self._flux(derouler_lecture(texte, d.get("cas"), mode, d.get("modele") or "sonnet"))
         if self.path == "/api/banc":
-            v = "v0.1" if d.get("version") == "v0.1" else "v0.2"
+            v = "v0.1" if d.get("version") == "v0.1" else VERSION_SKILL
             return self._flux(derouler_banc(v, mode, d.get("modele") or "sonnet"))
         self.send_error(404)
 

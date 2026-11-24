@@ -18,7 +18,7 @@
   </nav>
   <div class="mode" role="radiogroup" aria-label="Mode">
     <div class="bascule"><button role="radio" aria-checked="true" data-mode="direct" class="choix actif">En direct</button><button role="radio" aria-checked="false" data-mode="rejouer" class="choix">Rejouer</button></div>
-    <span class="aide" id="aide-mode">Appelle vraiment Claude : de 15 à 45 s par dossier selon la charge.</span>
+    <span class="aide" id="aide-mode">Appelle vraiment Claude : de 20 à 50 s par dossier selon la charge.</span>
   </div>
 </header>
 
@@ -44,9 +44,14 @@
     </article>
 
     <section class="releve" aria-label="Ce que le skill a relevé">
-      <p class="vide-releve" id="vide-releve">Lance la lecture : les 12 points s'affichent ici. Clique sur l'un d'eux pour voir la ligne du dossier d'où il vient.</p>
+      <p class="vide-releve" id="vide-releve">Lance la lecture : les 12 points s'affichent ici. Clique sur l'un d'eux pour voir la ligne du dossier d'où il vient et, pour une clause à risque, pourquoi et quoi faire.</p>
       <div id="alertes"></div>
-      <ol id="points" class="points"></ol>
+      <section id="bloc-a-faire" class="a-faire" hidden aria-labelledby="titre-a-faire">
+        <h2 id="titre-a-faire">Avant la remise</h2>
+        <ol id="a-faire"></ol>
+      </section>
+      <h2 class="titre-points" id="titre-points" hidden>Les 12 points</h2>
+      <ol id="points" class="points" aria-labelledby="titre-points"></ol>
       <div id="notation"></div>
     </section>
 
@@ -73,12 +78,12 @@
         <dl class="chiffres"></dl>
         <button class="action discret" data-banc="v0.1">Relancer la consigne simple</button>
       </div>
-      <div class="version skill" id="v-v0.2">
+      <div class="version skill" id="v-skill">
         <h2>Le skill</h2>
-        <p class="sous">Statuts définis, contradictions signalées, « non trouvé » obligatoire.</p>
+        <p class="sous">Statuts définis, contradictions signalées, « non trouvé » obligatoire, chaque risque expliqué.</p>
         <p class="score"><span>—</span></p>
         <dl class="chiffres"></dl>
-        <button class="action" data-banc="v0.2">Relancer le skill</button>
+        <button class="action" data-banc="skill">Relancer le skill</button>
       </div>
     </div>
     <table class="dossiers-banc" aria-label="Score par dossier">

@@ -45,9 +45,33 @@ class Controle(unittest.TestCase):
         self.assertFalse(c["ok"]); self.assertEqual(c["manquantes"], ["avance"]); self.assertEqual(c["statuts_inconnus"], ["visite"])
 
     def test_notation_identique_au_banc(self):
-        r = app.resultats("v0.2")
+        r = app.resultats(app.VERSION_SKILL)
         for cas, c in r["cas"].items():
             self.assertEqual(app.noter(c["reponse"], cas)["points"], app.ev.noter(c["reponse"], app.attendu(cas))[0])
+
+class Explications(unittest.TestCase):
+    DCE = "## CCAP\nArt. 8 Pénalités : 500 euros par jour.\n"
+    def test_risque_sans_explication_signale(self):
+        rep = {k: {"valeur": "x", "source": "CCAP art. 8", "statut": "ok"} for k in app.ev.CLES}
+        rep["penalites_retard"]["statut"] = "risque"
+        self.assertEqual(app.ev.controler_explications(rep, self.DCE)["manquantes"], ["penalites_retard"])
+
+    def test_contradiction_sans_question_signalee(self):
+        rep = {k: {"valeur": "x", "source": "", "statut": "ok"} for k in app.ev.CLES}
+        rep["delai_execution"] = {"valeur": "12 / 14", "source": "", "statut": "a_verifier", "pourquoi": "p", "que_faire": "q"}
+        self.assertEqual(app.ev.controler_explications(rep, self.DCE)["questions_manquantes"], ["delai_execution"])
+
+    def test_chiffre_absent_du_dossier(self):
+        rep = {k: {"valeur": "x", "source": "", "statut": "ok"} for k in app.ev.CLES}
+        rep["penalites_retard"] = {"valeur": "500", "source": "", "statut": "risque",
+                                   "pourquoi": "500 euros par jour, 30 jours = 15 000 euros", "que_faire": "provisionner"}
+        absents = [a["chiffre"] for a in app.ev.controler_explications(rep, self.DCE)["chiffres_absents"]]
+        self.assertEqual(absents, ["30", "15 000"])
+
+    def test_v03_tous_les_risques_expliques(self):
+        for cas, c in app.resultats("v0.3")["cas"].items():
+            self.assertEqual(c["explications"]["manquantes"], [], cas)
+            self.assertEqual(c["explications"]["questions_manquantes"], [], cas)
 
 class Routes(unittest.TestCase):
     @classmethod
@@ -75,6 +99,9 @@ class Routes(unittest.TestCase):
         points = next(e for e in ev if e["etape"] == "points")["points"]
         delai = next(p for p in points if p["cle"] == "delai_execution")
         self.assertEqual(delai["statut"], "a_verifier"); self.assertEqual(len(delai["lignes"]), 2)
+        self.assertTrue(delai["pourquoi"] and delai["que_faire"] and delai["question"])
+        a_faire = next(e for e in ev if e["etape"] == "points")["a_faire"]
+        self.assertTrue(a_faire and all("quand" in t and "lignes" in t for t in a_faire))
 
     def test_rejouer_dossier_colle_refuse(self):
         ev = self.post("/api/lire", {"texte": DOSSIER, "mode": "rejouer"})

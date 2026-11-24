@@ -1,0 +1,619 @@
+{
+ "version": "v0.3",
+ "modele": "sonnet",
+ "cas": {
+  "cas-01": {
+   "points": 36,
+   "sur": 36,
+   "inventions": 0,
+   "duree_s": 27.4,
+   "cout_usd": 0.1604174,
+   "detail": {
+    "date_limite": 3,
+    "visite": 3,
+    "criteres": 3,
+    "penalites_retard": 3,
+    "retenue_garantie": 3,
+    "avance": 3,
+    "revision_prix": 3,
+    "variantes": 3,
+    "delai_execution": 3,
+    "sous_traitance": 3,
+    "assurances": 3,
+    "pieces_candidature": 3
+   },
+   "explications": {
+    "a_expliquer": 2,
+    "manquantes": [],
+    "questions_manquantes": [],
+    "chiffres_absents": [
+     {
+      "cle": "penalites_retard",
+      "champ": "pourquoi",
+      "chiffre": "30"
+     }
+    ],
+    "a_faire": 4
+   },
+   "reponse": {
+    "date_limite": {
+     "valeur": "15/01/2027 à 12h00",
+     "source": "RC art. 6.1",
+     "statut": "ok"
+    },
+    "visite": {
+     "valeur": "Visite du site obligatoire ; l'attestation de visite est jointe à l'offre, faute de quoi l'offre est déclarée irrégulière",
+     "source": "RC art. 4.3",
+     "statut": "eliminatoire",
+     "pourquoi": "La visite est obligatoire et l'attestation doit figurer dans l'offre, sinon l'offre est déclarée irrégulière : un rejet est annoncé, donc le statut est éliminatoire. Le dossier ne donne pas de date de visite.",
+     "que_faire": "Faire la visite du site et joindre l'attestation de visite à l'offre remise au plus tard le 15/01/2027 à 12h00."
+    },
+    "criteres": {
+     "valeur": "Prix 50 %, valeur technique 40 %, performance environnementale 10 %",
+     "source": "RC art. 8",
+     "statut": "ok"
+    },
+    "penalites_retard": {
+     "valeur": "1/1000 du montant du marché par jour calendaire de retard, sans plafond",
+     "source": "CCAP art. 20.1",
+     "statut": "risque",
+     "pourquoi": "L'art. 20.1 applique 1/1000 du montant du marché par jour calendaire de retard et ne prévoit aucun plafond, ce qui déclenche la règle « sans plafond » du statut risque. Le coût croît sans limite avec le retard : 30 jours de retard × 1/1000 = 3 % du montant du marché.",
+     "que_faire": "Provisionner dans le prix un risque de pénalités sur la base du planning de 18 mois avant la remise du 15/01/2027.",
+     "question": "Le CCAP art. 20.1 fixe des pénalités de 1/1000 du montant du marché par jour calendaire sans plafond : l'acheteur prévoit-il un plafond de ces pénalités ?"
+    },
+    "retenue_garantie": {
+     "valeur": "5 %, remplaçable par une garantie à première demande",
+     "source": "CCAP art. 11",
+     "statut": "ok"
+    },
+    "avance": {
+     "valeur": "Avance de 10 %, sans constitution de garantie",
+     "source": "CCAP art. 5.2",
+     "statut": "ok"
+    },
+    "revision_prix": {
+     "valeur": "Prix révisables mensuellement selon l'index BT01",
+     "source": "CCAP art. 10.4",
+     "statut": "ok"
+    },
+    "variantes": {
+     "valeur": "Variantes autorisées sur le plancher bas uniquement",
+     "source": "RC art. 3.5",
+     "statut": "ok"
+    },
+    "delai_execution": {
+     "valeur": "18 mois, période de préparation de 2 mois comprise",
+     "source": "AE art. 4",
+     "statut": "ok"
+    },
+    "sous_traitance": {
+     "valeur": "Tout sous-traitant est déclaré et agréé avant le début de son intervention ; paiement direct au-delà de 600 euros TTC",
+     "source": "CCAP art. 3.2",
+     "statut": "ok"
+    },
+    "assurances": {
+     "valeur": "Responsabilité civile et décennale, attestations exigées ; aucun montant minimum indiqué",
+     "source": "CCAP art. 12 ; RC art. 5",
+     "statut": "ok"
+    },
+    "pieces_candidature": {
+     "valeur": "DC1, DC2, attestation d'assurance décennale en cours de validité",
+     "source": "RC art. 5",
+     "statut": "ok"
+    },
+    "alertes": [
+     "Éliminatoire : la visite du site est obligatoire et l'offre sans attestation de visite est déclarée irrégulière (RC art. 4.3).",
+     "Risque : pénalités de retard de 1/1000 du montant du marché par jour calendaire, sans plafond (CCAP art. 20.1)."
+    ],
+    "a_faire": [
+     {
+      "quand": "avant la remise",
+      "quoi": "Effectuer la visite du site et obtenir l'attestation de visite à joindre à l'offre",
+      "source": "RC art. 4.3"
+     },
+     {
+      "quand": "avant la remise",
+      "quoi": "Réunir DC1, DC2 et l'attestation d'assurance décennale en cours de validité",
+      "source": "RC art. 5"
+     },
+     {
+      "quand": "avant la remise",
+      "quoi": "Provisionner dans le prix le risque de pénalités de 1/1000 par jour sans plafond",
+      "source": "CCAP art. 20.1"
+     },
+     {
+      "quand": "15/01/2027 à 12h00",
+      "quoi": "Remettre l'offre complète, attestation de visite incluse",
+      "source": "RC art. 6.1"
+     }
+    ]
+   }
+  },
+  "cas-02": {
+   "points": 36,
+   "sur": 36,
+   "inventions": 0,
+   "duree_s": 24.5,
+   "cout_usd": 0.1579582,
+   "detail": {
+    "date_limite": 3,
+    "visite": 3,
+    "criteres": 3,
+    "penalites_retard": 3,
+    "retenue_garantie": 3,
+    "avance": 3,
+    "revision_prix": 3,
+    "variantes": 3,
+    "delai_execution": 3,
+    "sous_traitance": 3,
+    "assurances": 3,
+    "pieces_candidature": 3
+   },
+   "explications": {
+    "a_expliquer": 2,
+    "manquantes": [],
+    "questions_manquantes": [],
+    "chiffres_absents": [],
+    "a_faire": 3
+   },
+   "reponse": {
+    "date_limite": {
+     "valeur": "26/02/2027, 16h00, sur la plateforme de dématérialisation",
+     "source": "RC art. 7",
+     "statut": "ok"
+    },
+    "visite": {
+     "valeur": "visite facultative le 04/02/2027",
+     "source": "RC art. 3",
+     "statut": "ok"
+    },
+    "criteres": {
+     "valeur": "valeur technique 60 %, prix 40 %",
+     "source": "RC art. 9",
+     "statut": "ok"
+    },
+    "penalites_retard": {
+     "valeur": "1/3000 du montant HT du marché par jour de retard, plafonnées à 10 % du montant du marché",
+     "source": "CCAP art. 14",
+     "statut": "ok"
+    },
+    "retenue_garantie": {
+     "valeur": "5 %",
+     "source": "CCAP art. 9",
+     "statut": "ok"
+    },
+    "avance": {
+     "valeur": "non trouvé",
+     "source": "",
+     "statut": "non_trouve"
+    },
+    "revision_prix": {
+     "valeur": "prix fermes et actualisables",
+     "source": "CCAP art. 6",
+     "statut": "risque",
+     "pourquoi": "Les prix sont fermes et actualisables : l'actualisation ne joue qu'au démarrage, donc aucune révision pendant les 10 mois de travaux (CCAP art. 4), ce qui déclenche la règle « prix fermes sur plus de 3 mois ». Le dossier ne donne ni index ni taux de hausse, le coût d'une dérive des prix ne peut donc pas être chiffré.",
+     "que_faire": "Provisionner la hausse des matériaux dans le prix de l'offre, à remettre avant le 26/02/2027, 16h00."
+    },
+    "variantes": {
+     "valeur": "aucune variante n'est admise",
+     "source": "RC art. 2",
+     "statut": "ok"
+    },
+    "delai_execution": {
+     "valeur": "10 mois à compter de l'ordre de service de démarrage",
+     "source": "CCAP art. 4",
+     "statut": "ok"
+    },
+    "sous_traitance": {
+     "valeur": "conformément au CCAG Travaux",
+     "source": "CCAP art. 16",
+     "statut": "a_verifier",
+     "pourquoi": "L'article renvoie au CCAG Travaux sans donner de condition chiffrée ni de limite : c'est un renvoi sans chiffre. Le dossier ne permet pas de chiffrer un coût.",
+     "que_faire": "Relire les clauses de sous-traitance du CCAG Travaux applicable et poser la question avant la remise du 26/02/2027 si une limite gêne l'offre.",
+     "question": "L'article 16 du CCAP renvoie au CCAG Travaux pour la sous-traitance : pouvez-vous confirmer les conditions de déclaration et de paiement direct applicables au lot 01, ainsi que toute limite de part sous-traitée ?"
+    },
+    "assurances": {
+     "valeur": "non trouvé",
+     "source": "",
+     "statut": "non_trouve"
+    },
+    "pieces_candidature": {
+     "valeur": "non trouvé",
+     "source": "",
+     "statut": "non_trouve"
+    },
+    "alertes": [
+     "Risque : prix fermes et actualisables sur 10 mois (CCAP art. 6 et art. 4), aucune révision pendant les travaux."
+    ],
+    "a_faire": [
+     {
+      "quand": "avant la remise",
+      "quoi": "Provisionner la hausse des matériaux dans le prix, les prix étant fermes",
+      "source": "CCAP art. 6"
+     },
+     {
+      "quand": "avant la remise",
+      "quoi": "Poser à l'acheteur la question sur les conditions de sous-traitance renvoyées au CCAG Travaux",
+      "source": "CCAP art. 16"
+     },
+     {
+      "quand": "26/02/2027, 16h00",
+      "quoi": "Remettre l'offre sur la plateforme de dématérialisation",
+      "source": "RC art. 7"
+     }
+    ]
+   }
+  },
+  "cas-03": {
+   "points": 36,
+   "sur": 36,
+   "inventions": 0,
+   "duree_s": 46.8,
+   "cout_usd": 0.18841719999999998,
+   "detail": {
+    "date_limite": 3,
+    "visite": 3,
+    "criteres": 3,
+    "penalites_retard": 3,
+    "retenue_garantie": 3,
+    "avance": 3,
+    "revision_prix": 3,
+    "variantes": 3,
+    "delai_execution": 3,
+    "sous_traitance": 3,
+    "assurances": 3,
+    "pieces_candidature": 3
+   },
+   "explications": {
+    "a_expliquer": 5,
+    "manquantes": [],
+    "questions_manquantes": [],
+    "chiffres_absents": [
+     {
+      "cle": "penalites_retard",
+      "champ": "pourquoi",
+      "chiffre": "1/1000"
+     }
+    ],
+    "a_faire": 5
+   },
+   "reponse": {
+    "date_limite": {
+     "valeur": "05/03/2027 à 11h30",
+     "source": "RC art. 2.1",
+     "statut": "ok"
+    },
+    "visite": {
+     "valeur": "sans objet",
+     "source": "RC art. 2.3",
+     "statut": "ok"
+    },
+    "criteres": {
+     "valeur": "prix 60 %, valeur technique 30 %, délai 10 %",
+     "source": "RC art. 5",
+     "statut": "ok"
+    },
+    "penalites_retard": {
+     "valeur": "500 euros HT par jour calendaire, aucun plafond indiqué",
+     "source": "CCAP art. 8",
+     "statut": "risque",
+     "pourquoi": "L'art. 8 fixe 500 euros HT par jour calendaire sans plafond indiqué, ce qui déclenche la règle « pénalités sans plafond ». Chaque jour de retard coûte 500 euros HT, et le dossier ne donne pas le montant du marché pour comparer ce taux à 1/1000.",
+     "que_faire": "Rapporter les 500 euros HT par jour au montant de l'offre une fois chiffrée, et poser la question avant le 05/03/2027.",
+     "question": "Le CCAP art. 8 fixe des pénalités de 500 euros HT par jour calendaire : un plafond de pénalités s'applique-t-il à ce marché, et lequel ?"
+    },
+    "retenue_garantie": {
+     "valeur": "5 %",
+     "source": "CCAP art. 4.6",
+     "statut": "ok"
+    },
+    "avance": {
+     "valeur": "5 %, sous réserve d'une garantie à première demande",
+     "source": "CCAP art. 4.2",
+     "statut": "ok"
+    },
+    "revision_prix": {
+     "valeur": "prix fermes, non actualisables et non révisables",
+     "source": "CCAP art. 3.1",
+     "statut": "risque",
+     "pourquoi": "L'art. 3.1 fixe des prix fermes, non actualisables et non révisables sur un délai de 12 mois (CCAP art. 2.2), ce qui déclenche la règle « prix fermes sur plus de 3 mois ». Toute hausse des matériaux pendant les travaux reste dans le prix remis, et le dossier ne donne pas de quoi la chiffrer.",
+     "que_faire": "Provisionner la hausse des matériaux dans le prix avant la remise du 05/03/2027 à 11h30."
+    },
+    "variantes": {
+     "valeur": "interdites",
+     "source": "RC art. 1.4",
+     "statut": "ok"
+    },
+    "delai_execution": {
+     "valeur": "12 mois, période de préparation incluse (CCAP art. 2.2) / 14 mois (AE art. 3)",
+     "source": "CCAP art. 2.2 ; AE art. 3",
+     "statut": "a_verifier",
+     "pourquoi": "Le CCAP art. 2.2 indique 12 mois période de préparation incluse, l'acte d'engagement art. 3 indique 14 mois : la règle de contradiction entre deux pièces s'applique. Si les 12 mois s'imposent, l'écart de 14 mois − 12 mois = 2 mois serait en retard à 500 euros HT par jour calendaire (CCAP art. 8), et le délai pèse 10 % des critères (RC art. 5).",
+     "que_faire": "Poser la question à l'acheteur avant le 05/03/2027 et ne pas choisir un des deux délais avant sa réponse.",
+     "question": "Le CCAP art. 2.2 fixe un délai global de 12 mois, période de préparation incluse, tandis que l'acte d'engagement art. 3 indique 14 mois : quel délai fait foi, et la période de préparation est-elle comprise dans ce délai ?"
+    },
+    "sous_traitance": {
+     "valeur": "non trouvé",
+     "source": "",
+     "statut": "non_trouve"
+    },
+    "assurances": {
+     "valeur": "décennale de 2 000 000 euros minimum par sinistre",
+     "source": "CCAP art. 10",
+     "statut": "risque",
+     "pourquoi": "L'art. 10 exige une décennale de 2 000 000 euros minimum par sinistre, ce qui déclenche la règle du montant minimum exigé. Si la police de l'entreprise est en dessous, l'exigence n'est pas remplie, et le dossier ne donne pas de quoi chiffrer un surcoût de prime.",
+     "que_faire": "Comparer le plafond par sinistre de la police décennale de l'entreprise à 2 000 000 euros avant la remise du 05/03/2027."
+    },
+    "pieces_candidature": {
+     "valeur": "DC1, DC2, Kbis de moins de 3 mois, à peine d'irrecevabilité",
+     "source": "RC art. 4",
+     "statut": "eliminatoire",
+     "pourquoi": "L'art. 4 exige DC1, DC2 et un Kbis de moins de 3 mois « à peine d'irrecevabilité », ce qui déclenche la règle éliminatoire. L'oubli d'une pièce, ou un Kbis trop ancien, fait rejeter l'offre.",
+     "que_faire": "Joindre DC1, DC2 et un Kbis de moins de 3 mois à l'offre déposée avant le 05/03/2027 à 11h30."
+    },
+    "alertes": [
+     "Éliminatoire : DC1, DC2 et Kbis de moins de 3 mois exigés à peine d'irrecevabilité (RC art. 4).",
+     "Contradiction : délai de 12 mois période de préparation incluse (CCAP art. 2.2) contre 14 mois (AE art. 3).",
+     "Risque : pénalités de 500 euros HT par jour calendaire sans plafond indiqué (CCAP art. 8).",
+     "Risque : prix fermes, non actualisables et non révisables sur 12 mois (CCAP art. 3.1).",
+     "Risque : décennale de 2 000 000 euros minimum par sinistre exigée (CCAP art. 10)."
+    ],
+    "a_faire": [
+     {
+      "quand": "avant le 05/03/2027",
+      "quoi": "Envoyer à l'acheteur la question sur le délai de 12 mois (CCAP) contre 14 mois (AE), et celle sur le plafond des pénalités",
+      "source": "CCAP art. 2.2 ; AE art. 3 ; CCAP art. 8"
+     },
+     {
+      "quand": "05/03/2027 à 11h30",
+      "quoi": "Remettre l'offre avec DC1, DC2 et un Kbis de moins de 3 mois",
+      "source": "RC art. 2.1 ; RC art. 4"
+     },
+     {
+      "quand": "avant la remise",
+      "quoi": "Provisionner dans le prix la hausse des matériaux, les prix étant fermes et non révisables",
+      "source": "CCAP art. 3.1"
+     },
+     {
+      "quand": "avant la remise",
+      "quoi": "Comparer la police décennale de l'entreprise au minimum de 2 000 000 euros par sinistre",
+      "source": "CCAP art. 10"
+     },
+     {
+      "quand": "avant la remise",
+      "quoi": "Prévoir la garantie à première demande si l'avance de 5 % est souhaitée",
+      "source": "CCAP art. 4.2"
+     }
+    ]
+   }
+  },
+  "cas-04": {
+   "points": 36,
+   "sur": 36,
+   "inventions": 0,
+   "duree_s": 20.2,
+   "cout_usd": 0.1386231,
+   "detail": {
+    "date_limite": 3,
+    "visite": 3,
+    "criteres": 3,
+    "penalites_retard": 3,
+    "retenue_garantie": 3,
+    "avance": 3,
+    "revision_prix": 3,
+    "variantes": 3,
+    "delai_execution": 3,
+    "sous_traitance": 3,
+    "assurances": 3,
+    "pieces_candidature": 3
+   },
+   "explications": {
+    "a_expliquer": 0,
+    "manquantes": [],
+    "questions_manquantes": [],
+    "chiffres_absents": [],
+    "a_faire": 1
+   },
+   "reponse": {
+    "date_limite": {
+     "valeur": "avant le 19/03/2027 à 17h00",
+     "source": "RC art. 6",
+     "statut": "ok"
+    },
+    "visite": {
+     "valeur": "vivement conseillée mais n'est pas obligatoire",
+     "source": "RC art. 3",
+     "statut": "ok"
+    },
+    "criteres": {
+     "valeur": "prix 45 %, valeur technique 45 %, gestion des déchets 10 %",
+     "source": "RC art. 7",
+     "statut": "ok"
+    },
+    "penalites_retard": {
+     "valeur": "1/1000 du montant par jour, plafonnées à 5 %",
+     "source": "CCAP art. 11",
+     "statut": "ok"
+    },
+    "retenue_garantie": {
+     "valeur": "3 %",
+     "source": "CCAP art. 7",
+     "statut": "ok"
+    },
+    "avance": {
+     "valeur": "20 % pour les PME, 5 % dans les autres cas",
+     "source": "CCAP art. 5",
+     "statut": "ok"
+    },
+    "revision_prix": {
+     "valeur": "prix révisables, index BT07",
+     "source": "CCAP art. 6",
+     "statut": "ok"
+    },
+    "variantes": {
+     "valeur": "une variante est autorisée sur le traitement anticorrosion",
+     "source": "RC art. 4",
+     "statut": "ok"
+    },
+    "delai_execution": {
+     "valeur": "non trouvé",
+     "source": "",
+     "statut": "non_trouve"
+    },
+    "sous_traitance": {
+     "valeur": "la sous-traitance du lot est limitée à 30 % du montant",
+     "source": "CCAP art. 9",
+     "statut": "ok"
+    },
+    "assurances": {
+     "valeur": "non trouvé",
+     "source": "",
+     "statut": "non_trouve"
+    },
+    "pieces_candidature": {
+     "valeur": "non trouvé",
+     "source": "",
+     "statut": "non_trouve"
+    },
+    "alertes": [],
+    "a_faire": [
+     {
+      "quand": "19/03/2027 à 17h00",
+      "quoi": "Faire parvenir l'offre à l'acheteur",
+      "source": "RC art. 6"
+     }
+    ]
+   }
+  },
+  "cas-05": {
+   "points": 36,
+   "sur": 36,
+   "inventions": 0,
+   "duree_s": 32.0,
+   "cout_usd": 0.1991683,
+   "detail": {
+    "date_limite": 3,
+    "visite": 3,
+    "criteres": 3,
+    "penalites_retard": 3,
+    "retenue_garantie": 3,
+    "avance": 3,
+    "revision_prix": 3,
+    "variantes": 3,
+    "delai_execution": 3,
+    "sous_traitance": 3,
+    "assurances": 3,
+    "pieces_candidature": 3
+   },
+   "explications": {
+    "a_expliquer": 3,
+    "manquantes": [],
+    "questions_manquantes": [],
+    "chiffres_absents": [],
+    "a_faire": 5
+   },
+   "reponse": {
+    "date_limite": {
+     "valeur": "09/04/2027 à 12h00",
+     "source": "RC art. 5",
+     "statut": "ok"
+    },
+    "visite": {
+     "valeur": "Visite obligatoire : attestation de visite signée par le maître d'ouvrage remise avec l'offre. Toute offre sans attestation est rejetée.",
+     "source": "RC art. 2",
+     "statut": "eliminatoire",
+     "pourquoi": "L'art. 2 du RC impose l'attestation de visite signée par le maître d'ouvrage et annonce le rejet de toute offre qui n'en a pas : règle éliminatoire. Une offre sans attestation est rejetée, donc la totalité de l'offre est perdue, quel que soit le prix.",
+     "que_faire": "Faire signer l'attestation de visite par le maître d'ouvrage et la joindre à l'offre avant le 09/04/2027 à 12h00."
+    },
+    "criteres": {
+     "valeur": "Valeur technique 55 %, prix 45 %",
+     "source": "RC art. 6",
+     "statut": "ok"
+    },
+    "penalites_retard": {
+     "valeur": "Application des pénalités du CCAG Travaux (aucun taux ni plafond donné dans le dossier)",
+     "source": "CCAP art. 8",
+     "statut": "a_verifier",
+     "pourquoi": "L'art. 8 du CCAP renvoie au CCAG Travaux sans donner de taux par jour ni de plafond : c'est un renvoi sans chiffre, donc à vérifier. Le dossier ne permet pas de chiffrer le coût d'un retard.",
+     "que_faire": "Relever le taux et le plafond dans le CCAG Travaux applicable, ou les demander à l'acheteur avant la remise du 09/04/2027.",
+     "question": "Pouvez-vous préciser le taux journalier et le plafond des pénalités de retard visées à l'art. 8 du CCAP (« pénalités du CCAG Travaux »), pour un délai d'exécution de 16 mois (CCAP art. 3) ?"
+    },
+    "retenue_garantie": {
+     "valeur": "5 %",
+     "source": "CCAP art. 9",
+     "statut": "ok"
+    },
+    "avance": {
+     "valeur": "non trouvé",
+     "source": "",
+     "statut": "non_trouve"
+    },
+    "revision_prix": {
+     "valeur": "Prix révisables selon l'index BT01",
+     "source": "CCAP art. 4",
+     "statut": "ok"
+    },
+    "variantes": {
+     "valeur": "non trouvé",
+     "source": "",
+     "statut": "non_trouve"
+    },
+    "delai_execution": {
+     "valeur": "16 mois",
+     "source": "CCAP art. 3",
+     "statut": "ok"
+    },
+    "sous_traitance": {
+     "valeur": "non trouvé",
+     "source": "",
+     "statut": "non_trouve"
+    },
+    "assurances": {
+     "valeur": "Responsabilité civile professionnelle de 5 000 000 euros et décennale (aucun montant donné pour la décennale)",
+     "source": "CCAP art. 12",
+     "statut": "risque",
+     "pourquoi": "L'art. 12 du CCAP exige un montant minimum de 5 000 000 euros en responsabilité civile professionnelle, ce qui déclenche la règle « montant minimum exigé ». Le dossier ne dit pas ce qui se passe si la police est inférieure ni ce que couvre celle de l'entreprise : pas de chiffrage possible.",
+     "que_faire": "Comparer la police de responsabilité civile professionnelle de l'entreprise aux 5 000 000 euros exigés, et joindre l'attestation d'assurance à l'offre avant le 09/04/2027."
+    },
+    "pieces_candidature": {
+     "valeur": "DC1, DC2, références de moins de 5 ans, attestation d'assurance",
+     "source": "RC art. 7",
+     "statut": "ok"
+    },
+    "alertes": [
+     "Éliminatoire : visite obligatoire, toute offre sans attestation de visite signée par le maître d'ouvrage est rejetée (RC art. 2).",
+     "Risque : responsabilité civile professionnelle de 5 000 000 euros exigée au minimum (CCAP art. 12)."
+    ],
+    "a_faire": [
+     {
+      "quand": "avant la remise",
+      "quoi": "Faire signer l'attestation de visite par le maître d'ouvrage et la joindre à l'offre",
+      "source": "RC art. 2"
+     },
+     {
+      "quand": "avant la remise",
+      "quoi": "Demander à l'acheteur le taux et le plafond des pénalités de retard, ou les relever dans le CCAG Travaux",
+      "source": "CCAP art. 8"
+     },
+     {
+      "quand": "avant la remise",
+      "quoi": "Comparer la police de responsabilité civile professionnelle aux 5 000 000 euros exigés",
+      "source": "CCAP art. 12"
+     },
+     {
+      "quand": "avant la remise",
+      "quoi": "Réunir DC1, DC2, références de moins de 5 ans et attestation d'assurance",
+      "source": "RC art. 7"
+     },
+     {
+      "quand": "09/04/2027 à 12h00",
+      "quoi": "Remettre l'offre",
+      "source": "RC art. 5"
+     }
+    ]
+   }
+  }
+ },
+ "score": 100.0,
+ "inventions": 0,
+ "explications_manquantes": 0
+}

@@ -2,6 +2,15 @@
 
 Chaque version est évaluée sur les mêmes 5 dossiers, avec le même modèle (Claude Sonnet).
 
+## 0.3.0, 24/11/2026 : expliquer chaque risque
+
+- Chaque point `risque`, `eliminatoire` ou `a_verifier` porte `pourquoi` (règle déclenchée, coût calculé avec les seuls chiffres du dossier), `que_faire` (avec la date du dossier) et, quand elle peut lever le doute, `question` (prête à envoyer à l'acheteur, articles cités).
+- Nouvelle liste `a_faire` : les actions datées avant la remise. Les `alertes` sont triées : éliminatoire, contradiction, risque.
+- `references/points.md` dit, point par point, ce qui change le statut. `a_verifier` est réservé aux contradictions et aux renvois sans chiffre.
+- Le banc contrôle les explications hors score : présentes sur chaque risque, question présente sur chaque point à vérifier, chiffres absents du dossier listés pour relecture.
+- Premier passage : 98,9 %. Deux statuts glissaient vers « à vérifier » parce que la police d'assurance de l'entreprise n'est pas dans le dossier, et que « fermes et actualisables » semblait ambigu. Deux règles ajoutées à `points.md` : le statut se décide sur le dossier, la vérification interne va dans `que_faire` ; des prix fermes et actualisables restent fermes pendant les travaux.
+- **Score : 100 %, 0 statut faux, 0 invention, 12 risques expliqués sur 12.** 0,17 $ et 30 s par dossier en moyenne : les explications doublent la durée, pas le coût.
+
 ## Interface locale, 24/11/2026
 
 - `python app.py` : lire un dossier en voyant d'où vient chaque valeur, et relancer le banc dans le navigateur. Modes *En direct* et *Rejouer*. 12 tests.
