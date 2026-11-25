@@ -52,6 +52,22 @@ cp references/points.md ~/.claude/skills/lecture-dce/references/
 
 Puis, dans une nouvelle session Claude Code, coller un DCE et demander « analyse ce DCE » : le skill se déclenche seul. Testé sur du texte ; pas encore mesuré sur un DCE en PDF.
 
+## Le serveur MCP
+
+`mcp_server.py` expose le banc d'évaluation à un agent, en 4 outils :
+
+- `lister_dossiers` : les 5 dossiers de test, id et titre.
+- `lire_dossier` : le texte d'un dossier (`cas-01` à `cas-05`, rien d'autre).
+- `verifier_reponse` : le format d'une réponse du skill (12 clés, statuts connus, une source par valeur) et ses explications (pourquoi, que faire, question, chiffres absents du dossier).
+- `noter_reponse` : la note sur 36, les inventions et les statuts faux, exactement comme le banc.
+
+```bash
+pip install mcp
+python mcp_server.py
+```
+
+Le serveur parle en stdio. `.mcp.json` l'enregistre pour Claude Code dans ce dossier : au premier lancement de `claude`, il demande d'approuver le serveur. Aucun appel au modèle : tout est déterministe et gratuit.
+
 ## Lancer l'évaluation
 
 **Prérequis** : Python 3.10 ou plus (bibliothèque standard seulement), et la CLI [Claude Code](https://docs.claude.com/en/docs/claude-code) installée et connectée (`claude --version` doit répondre).
@@ -108,7 +124,10 @@ lecture-dce/
     resultats-v0.3.json   skill, avec explications (rejoué par l'interface)
     discussions/          conversations Claude Code enregistrées (rejouées par l'interface)
   app.py, ui/             l'interface locale (http://127.0.0.1:8790)
+  mcp_server.py           le serveur MCP (4 outils, sans appel au modèle)
+  .mcp.json               l'enregistre pour Claude Code dans ce dossier
   tests/                  tests de l'interface
+    test_mcp.py           tests du serveur MCP, dont un échange réel en stdio
   CHANGELOG.md            chaque version et son score
 ```
 

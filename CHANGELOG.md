@@ -2,6 +2,12 @@
 
 Chaque version est évaluée sur les mêmes 5 dossiers, avec le même modèle (Claude Sonnet).
 
+## Serveur MCP, 25/11/2026
+
+- `mcp_server.py` : 4 outils (`lister_dossiers`, `lire_dossier`, `verifier_reponse`, `noter_reponse`), qui réutilisent les fonctions de `app.py` et `evals/evaluer.py`. `.mcp.json` l'enregistre pour Claude Code.
+- Aucun appel au modèle : la note d'une réponse est celle du banc (36/36 et 0 invention sur la réponse v0.3 de cas-03).
+- 5 tests de plus (23 au total), dont un échange réel en stdio avec le client du SDK `mcp` ; ils sont ignorés si le paquet n'est pas installé.
+
 ## Interface, 25/11/2026 : le skill dans Claude Code
 
 - Nouvel onglet *Dans Claude Code* : le skill installé est appelé par `claude -p` avec une simple question, sans consigne. Le fil montre le choix du skill, le chargement de `SKILL.md`, la lecture de `references/points.md`, puis la réponse, contrôlée et notée comme au banc.
