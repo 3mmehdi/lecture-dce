@@ -208,3 +208,7 @@ tr.encours td{color:var(--risque)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .point.ok .explication,.point.non_trouve .explication{border-left-color:var(--filet)}
 .explication .regle small{display:block;font-size:12px;color:var(--absent);margin-top:2px}
+.demande .case-mcp{grid-column:1/-1;display:flex;gap:8px;align-items:center;font-size:13px;color:var(--encre2);cursor:pointer}
+.demande .case-mcp input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.fil .outil.mcp::before{background:var(--accent)}
+.fil .retour.note b{color:var(--encre);font-weight:600}

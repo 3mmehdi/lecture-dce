@@ -83,6 +83,7 @@
           <input id="claude-question" value="Analyse ce DCE : qu'est-ce que je dois retenir avant de répondre ?">
         </div>
         <button class="action" id="btn-claude" type="submit">Envoyer à Claude Code</button>
+        <label class="case-mcp"><input type="checkbox" id="claude-mcp"> Avec le serveur MCP du skill : Claude lit le dossier par l'outil, puis se contrôle et se note avant de répondre</label>
       </form>
       <ol class="fil" id="fil" aria-live="polite">
         <li class="vide-fil">Aucune consigne n'est envoyée : seulement la question et le dossier. Claude doit trouver tout seul qu'un skill installé correspond, le charger, puis répondre.</li>
@@ -99,6 +100,7 @@
         <li data-p="choix"><b>Il choisit le skill</b><span>La question parle d'un DCE : la description de lecture-dce correspond.</span></li>
         <li data-p="charge"><b>Il charge la consigne</b><span>SKILL.md entre dans le contexte seulement maintenant.</span></li>
         <li data-p="lu"><b>Il lit la référence</b><span>references/points.md : les règles de statut, lues à la demande.</span></li>
+        <li data-p="mcp"><b>Il se contrôle et se note</b><span>Avec le serveur MCP seulement : verifier_reponse et noter_reponse, la notation du banc, sans appel de modèle.</span></li>
         <li data-p="texte"><b>Il répond</b><span>Le JSON défini par le skill, rien d'autre.</span></li>
         <li data-p="controle"><b>On contrôle et on note</b><span>Les mêmes contrôles et la même notation que le banc.</span></li>
       </ol>

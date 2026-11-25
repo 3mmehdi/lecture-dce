@@ -351,6 +351,7 @@ function ajouterFil(html, classe = '') {
 
 function nomOutil(e) {
   if (e.nom === 'Skill') return `Skill<span>(${esc(e.detail)})</span>`;
+  if (e.nom.startsWith('mcp__')) return `MCP · ${esc(e.nom.split('__').pop())}<span>(${esc(e.detail)})</span>`;
   const court = e.detail.replace(/\\/g, '/').replace(/^.*\/skills\/lecture-dce\//, '');
   return `${esc(e.nom)}<span>(${esc(court)})</span>`;
 }
@@ -358,7 +359,7 @@ function nomOutil(e) {
 function traiterClaude(e) {
   if (e.etape === 'dossier') ficheClaude.push(e);
   if (e.etape === 'demande') {
-    ajouterFil(`<p>${esc(e.question)}</p><small>dossier joint · ${e.lignes} lignes</small>`, 'humain');
+    ajouterFil(`<p>${esc(e.question)}</p><small>${e.mcp ? 'dossier lu par l\'outil MCP · serveur lecture-dce branché' : `dossier joint · ${e.lignes} lignes`}</small>`, 'humain');
     ajouterFil('Claude Code démarre…', 'attente');
   }
   if (e.etape === 'session') {
@@ -367,7 +368,14 @@ function traiterClaude(e) {
     ajouterFil('Claude réfléchit…', 'attente');
   }
   if (e.etape === 'reflechit' && !$('#fil .attente')) ajouterFil('Claude réfléchit…', 'attente');
-  if (e.etape === 'outil') { phase(e.nom === 'Skill' ? 'choix' : 'lu', 'encours'); ajouterFil(nomOutil(e), 'outil'); }
+  if (e.etape === 'outil') {
+    const mcp = e.nom.startsWith('mcp__'), controle = /verifier_reponse|noter_reponse/.test(e.nom);
+    phase(e.nom === 'Skill' ? 'choix' : controle ? 'mcp' : 'lu', 'encours');
+    ajouterFil(nomOutil(e), mcp ? 'outil mcp' : 'outil');
+  }
+  if (e.etape === 'mcp_controle') ajouterFil(`Contrôle : ${e.ok ? '12 clés, statuts connus' : `${e.manquantes} clé(s) manquante(s)`}, ${e.expliques}/${e.a_expliquer} risques expliqués`
+    + ((e.absents || []).length ? `, <b>chiffre absent du dossier : ${e.absents.map(esc).join(', ')}</b>` : ''), 'retour note');
+  if (e.etape === 'mcp_note') { phase('mcp', 'fait'); ajouterFil(`Note rendue par le serveur : <b>${e.points}/${e.sur}</b>, ${e.inventions} invention${e.inventions > 1 ? 's' : ''}, ${e.statuts_faux} statut${e.statuts_faux > 1 ? 's' : ''} faux`, 'retour note'); }
   if (e.etape === 'charge') {
     phase('choix', 'fait'); phase('charge', 'fait');
     const li = ajouterFil(`<span>Consigne du skill chargée : ${milliers(e.caracteres)} caractères</span> <button class="lien" type="button">voir le début</button><pre hidden></pre>`, 'retour');
@@ -427,7 +435,7 @@ $('#form-claude').addEventListener('submit', async (ev) => {
   preparerClaude(c || null, false);
   enCours = true; $('#btn-claude').disabled = true; $('#btn-claude').textContent = mode === 'direct' ? 'Claude Code travaille…' : 'Rejeu…';
   try {
-    await flux('/api/discussion', { texte, cas: c || null, mode, question: $('#claude-question').value }, traiterClaude);
+    await flux('/api/discussion', { texte, cas: c || null, mode, question: $('#claude-question').value, mcp: $('#claude-mcp').checked }, traiterClaude);
   } catch (err) {
     ajouterFil(esc(err.message), 'erreur');
   } finally {

@@ -13,6 +13,10 @@ HOTE, PORT = "127.0.0.1", 8790
 VERSION_SKILL = "v0.3"  # la version rejouée et comparée à la consigne simple
 DISCUSSIONS = EV / "discussions"  # conversations Claude Code enregistrées, pour le mode Rejouer
 QUESTION = "Analyse ce DCE : qu'est-ce que je dois retenir avant de répondre ?"
+# Avec le serveur MCP : Claude lit le dossier par l'outil, puis se contrôle et se note avant de rendre sa réponse
+QUESTION_MCP = ("Analyse le DCE {cas} : récupère son texte avec l'outil lire_dossier. Avant de me rendre ta réponse, "
+                "contrôle-la avec verifier_reponse puis note-la avec noter_reponse, corrige si besoin, et rends le JSON final.")
+OUTILS_MCP = ["mcp__lecture-dce__" + n for n in ("lister_dossiers", "lire_dossier", "verifier_reponse", "noter_reponse")]
 STATUTS = {"ok", "risque", "eliminatoire", "a_verifier", "non_trouve"}
 NOMS = {"date_limite": "Date limite", "visite": "Visite de site", "criteres": "Critères", "penalites_retard": "Pénalités de retard",
         "retenue_garantie": "Retenue de garantie", "avance": "Avance", "revision_prix": "Révision des prix", "variantes": "Variantes",
@@ -148,6 +152,23 @@ MAISON = str(pathlib.Path.home())
 def anonyme(s):
     return str(s).replace(MAISON, "~").replace(MAISON.replace("\\", "/"), "~")
 
+def retour_mcp(texte):
+    """Le retour de verifier_reponse ou de noter_reponse, résumé ; None pour tout autre retour d'outil."""
+    try:
+        d = json.loads(texte)
+    except (json.JSONDecodeError, TypeError):
+        return None
+    if not isinstance(d, dict): return None
+    if "points" in d and "sur" in d:
+        return {"etape": "mcp_note", "points": d["points"], "sur": d["sur"], "inventions": d.get("inventions", 0),
+                "statuts_faux": len(d.get("statuts_faux") or [])}
+    if "manquantes" in d and "ok" in d:
+        x = d.get("explications") or {}
+        return {"etape": "mcp_controle", "ok": d["ok"], "manquantes": len(d["manquantes"]),
+                "expliques": (x.get("a_expliquer", 0) - len(x.get("manquantes") or [])), "a_expliquer": x.get("a_expliquer", 0),
+                "absents": sorted({a.get("chiffre", "") for a in x.get("chiffres_absents") or [] if isinstance(a, dict)})}
+    return None
+
 def traduire(e, vus):
     """Un événement stream-json de « claude -p » -> zéro ou plusieurs étapes lisibles. On ne garde que ce qui explique le déroulé."""
     t = e.get("type")
@@ -162,7 +183,11 @@ def traduire(e, vus):
             elif k == "tool_use":
                 vus.discard("reflechit")
                 entree = c.get("input") or {}
-                detail = entree.get("skill") or anonyme(entree.get("file_path") or json.dumps(entree, ensure_ascii=False))
+                if c.get("name", "").startswith("mcp__"):
+                    detail = ", ".join(f"{k}={v}" if len(str(v)) < 40 else f"{k}=<{len(str(v)):,} caractères>".replace(",", " ")
+                                       for k, v in entree.items())
+                else:
+                    detail = entree.get("skill") or entree.get("query") or anonyme(entree.get("file_path") or json.dumps(entree, ensure_ascii=False))
                 yield {"etape": "outil", "nom": c.get("name", ""), "detail": detail}
             elif k == "text" and c.get("text", "").strip():
                 vus.discard("reflechit"); yield {"etape": "texte", "texte": c["text"]}
@@ -173,44 +198,60 @@ def traduire(e, vus):
                 yield {"etape": "charge", "quoi": "SKILL.md", "caracteres": len(c["text"]), "debut": anonyme(c["text"][:600])}
             elif c.get("type") == "tool_result":
                 contenu = c.get("content")
-                taille = len(contenu) if isinstance(contenu, str) else sum(len(x.get("text", "")) for x in contenu or [] if isinstance(x, dict))
-                if taille > 40: yield {"etape": "lu", "caracteres": taille}
+                texte = contenu if isinstance(contenu, str) else "".join(x.get("text", "") for x in contenu or [] if isinstance(x, dict))
+                retour = retour_mcp(texte)
+                if retour: yield retour
+                elif len(texte) > 40: yield {"etape": "lu", "caracteres": len(texte)}
     elif t == "result":
         yield {"etape": "resultat", "duree_s": round((e.get("duration_ms") or 0) / 1000, 1), "cout_usd": e.get("total_cost_usd", 0),
                "tours": e.get("num_turns", 0), "erreur": bool(e.get("is_error"))}
 
-def derouler_discussion(texte, question, cas, mode, modele="sonnet"):
+def derouler_discussion(texte, question, cas, mode, modele="sonnet", avec_mcp=False):
     dossier = decouper(texte)
     yield {"etape": "dossier", "dossier": dossier}
-    yield {"etape": "demande", "question": question, "lignes": len(texte.splitlines())}
+    if avec_mcp:
+        if not cas:
+            yield {"etape": "erreur", "message": "Avec le serveur MCP, choisis un dossier de test : la notation a besoin de sa réponse attendue."}
+            return
+        question = QUESTION_MCP.format(cas=cas)
+    yield {"etape": "demande", "question": question, "lignes": len(texte.splitlines()), "mcp": avec_mcp}
     etapes = []
+    nom = f"{cas}-mcp.json" if avec_mcp else f"{cas}.json"
     if mode == "rejouer":
-        f = DISCUSSIONS / f"{cas}.json"
+        f = DISCUSSIONS / nom
         if not cas or not f.exists():
             yield {"etape": "erreur", "message": "Aucune conversation enregistrée pour ce dossier. Passe en direct : chaque conversation en direct sur un dossier de test est enregistrée."}
             return
         for x in json.loads(f.read_text(encoding="utf-8")):
-            time.sleep(0.5 if x["etape"] in ("outil", "charge", "lu", "texte") else 0.15)  # assez pour suivre à l'œil
+            time.sleep(0.5 if x["etape"] in ("outil", "charge", "lu", "texte", "mcp_controle", "mcp_note") else 0.15)  # assez pour suivre à l'œil
             etapes.append(x); yield {**x, "rejoue": True}
     else:
         vus = set()
         with tempfile.TemporaryDirectory() as vide:  # dossier vide : aucune consigne de projet ne s'ajoute au skill
+            cmd = ["claude", "-p", "--model", modele, "--output-format", "stream-json", "--verbose"]
+            if avec_mcp:  # le serveur du dépôt, et lui seul ; pas de shell ni d'écriture de fichiers
+                conf = pathlib.Path(vide) / "mcp.json"
+                conf.write_text(json.dumps({"mcpServers": {"lecture-dce": {"command": sys.executable, "args": [str(ICI / "mcp_server.py")]}}}), encoding="utf-8")
+                # --tools fixe la liste des outils intégrés : --disallowedTools a laissé passer une tentative d'écriture le 26/11
+                cmd += ["--mcp-config", str(conf), "--strict-mcp-config", "--tools", "Skill,Read,ToolSearch",
+                        "--allowedTools", " ".join(["Skill", "Read"] + OUTILS_MCP)]
+            else:
+                cmd += ["--allowedTools", "Skill Read"]
             try:
-                proc = subprocess.Popen(["claude", "-p", "--model", modele, "--output-format", "stream-json", "--verbose",
-                                         "--allowedTools", "Skill Read"], cwd=vide, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                proc = subprocess.Popen(cmd, cwd=vide, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                         stderr=subprocess.DEVNULL, text=True, encoding="utf-8")
             except OSError as e:
                 yield {"etape": "erreur", "message": f"Claude Code introuvable ({type(e).__name__}). Vérifie que « claude --version » répond."}; return
-            proc.stdin.write(f"{question}\n\n{texte}"); proc.stdin.close()
+            proc.stdin.write(question if avec_mcp else f"{question}\n\n{texte}"); proc.stdin.close()
             for ligne in proc.stdout:
                 try: e = json.loads(ligne)
                 except json.JSONDecodeError: continue
                 for x in traduire(e, vus):
                     etapes.append(x); yield x
-            proc.wait(timeout=30)
+            proc.wait(timeout=60)
         if cas and any(x["etape"] == "resultat" and not x["erreur"] for x in etapes):
             DISCUSSIONS.mkdir(exist_ok=True)
-            (DISCUSSIONS / f"{cas}.json").write_text(json.dumps(etapes, ensure_ascii=False, indent=1), encoding="utf-8")
+            (DISCUSSIONS / nom).write_text(json.dumps(etapes, ensure_ascii=False, indent=1), encoding="utf-8")
     final = next((x["texte"] for x in reversed(etapes) if x["etape"] == "texte"), "")
     m = re.search(r"\{.*\}", final, re.S)
     try:
@@ -310,7 +351,7 @@ class Gestion(BaseHTTPRequestHandler):
             texte = (d.get("texte") or "").strip()
             if not texte: return self._json({"message": "Le dossier est vide. Choisis un dossier ou colle son texte."}, 400)
             question = (d.get("question") or "").strip() or QUESTION
-            return self._flux(derouler_discussion(texte, question, d.get("cas"), mode, d.get("modele") or "sonnet"))
+            return self._flux(derouler_discussion(texte, question, d.get("cas"), mode, d.get("modele") or "sonnet", bool(d.get("mcp"))))
         if self.path == "/api/banc":
             v = "v0.1" if d.get("version") == "v0.1" else VERSION_SKILL
             return self._flux(derouler_banc(v, mode, d.get("modele") or "sonnet"))

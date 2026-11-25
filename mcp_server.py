@@ -1,5 +1,7 @@
 # Serveur MCP du skill lecture-dce : les dossiers de test, le contrôle du format et la notation du banc, en 4 outils.
 # Lancement : python mcp_server.py  (transport stdio ; .mcp.json l'enregistre pour Claude Code dans ce dossier).
+#             python mcp_server.py --http [port]  (streamable HTTP sur 127.0.0.1, port 8791 par défaut, adresse /mcp :
+#             le transport d'un agent distant comme Copilot Studio. Sans authentification : à ne jamais exposer tel quel.)
 # Aucun appel au modèle : tout est déterministe et gratuit. Prérequis : pip install mcp
 import json, pathlib, re, sys
 
@@ -63,4 +65,9 @@ def noter_reponse(cas: str, reponse_json: str) -> dict:
 
 
 if __name__ == "__main__":
-    mcp.run("stdio")
+    if "--http" in sys.argv:
+        i = sys.argv.index("--http")
+        port = int(sys.argv[i + 1]) if len(sys.argv) > i + 1 else 8791
+        mcp.run("streamable-http", host="127.0.0.1", port=port)  # jamais 0.0.0.0 : aucune authentification ici
+    else:
+        mcp.run("stdio")

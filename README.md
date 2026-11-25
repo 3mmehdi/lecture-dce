@@ -36,7 +36,7 @@ python app.py
 Puis ouvrir http://127.0.0.1:8790. Rien à installer : bibliothèque standard seulement, et le serveur n'écoute que sur le poste.
 
 - **Lire un dossier** : choisir un des 5 dossiers (ou coller le texte d'un autre), lancer la lecture. La lecture passe par Claude Code, comme pour un chargé d'études : une question et le dossier, et Claude choisit le skill seul. Les 12 points s'affichent avec leur statut, les alertes et les actions datées avant la remise. Un clic sur un point allume, dans le dossier, l'article qu'il cite : on voit d'où vient chaque valeur. Le clic montre aussi la règle de `references/points.md` qui a fixé le statut ; sur un risque, il ouvre en plus le pourquoi, l'action à mener et la question à copier pour l'acheteur. En bas, les étapes (skill choisi, tours de Claude Code, réponse, contrôle du format, notation) avec leur durée et leur coût, la réponse brute, et un lien vers le déroulé de la conversation.
-- **Dans Claude Code** : le déroulé de la conversation, qu'elle soit lancée ici ou depuis *Lire un dossier* (c'est la même : une lecture remplit les deux onglets). L'interface envoie seulement une question (« Analyse ce DCE… ») et le dossier à `claude -p`, sans consigne. Le fil montre Claude qui choisit le skill d'après sa description, charge `SKILL.md`, lit `references/points.md` à la demande, puis répond. À côté : les étapes, et l'écart avec le banc, qui injecte la consigne en un seul tour (tours, durée, coût). Un bouton ouvre la même réponse dans la vue *Lire un dossier*, avec la même note. Il faut d'abord installer le skill (voir plus bas).
+- **Dans Claude Code** : le déroulé de la conversation, qu'elle soit lancée ici ou depuis *Lire un dossier* (c'est la même : une lecture remplit les deux onglets). L'interface envoie seulement une question (« Analyse ce DCE… ») et le dossier à `claude -p`, sans consigne. Le fil montre Claude qui choisit le skill d'après sa description, charge `SKILL.md`, lit `references/points.md` à la demande, puis répond. À côté : les étapes, et l'écart avec le banc, qui injecte la consigne en un seul tour (tours, durée, coût). Un bouton ouvre la même réponse dans la vue *Lire un dossier*, avec la même note. La case *Avec le serveur MCP* branche `mcp_server.py` : Claude lit le dossier par l'outil, se contrôle et se note avant de répondre (dossiers de test seulement ; conversation enregistrée pour cas-03). Il faut d'abord installer le skill (voir plus bas).
 - **Évaluer le skill** : la consigne simple et le skill côte à côte, dossier par dossier, et la liste des statuts que le skill corrige. Chaque version peut être relancée.
 - **En direct ou Rejouer** : *En direct* appelle vraiment Claude (de 20 à 50 s par dossier). *Rejouer* réaffiche les réponses mesurées, sans appel : les conversations enregistrées dans `evals/discussions/`, une par dossier de test (36/36 et 0 invention sur les cinq).
 
@@ -63,10 +63,24 @@ Puis, dans une nouvelle session Claude Code, coller un DCE et demander « analys
 
 ```bash
 pip install mcp
-python mcp_server.py
+python mcp_server.py               # stdio, pour Claude Code sur le poste
+python mcp_server.py --http 8791   # streamable HTTP sur http://127.0.0.1:8791/mcp, le transport des agents distants
 ```
 
-Le serveur parle en stdio. `.mcp.json` l'enregistre pour Claude Code dans ce dossier : au premier lancement de `claude`, il demande d'approuver le serveur. Aucun appel au modèle : tout est déterministe et gratuit.
+`.mcp.json` l'enregistre pour Claude Code dans ce dossier : au premier lancement de `claude`, il demande d'approuver le serveur. Aucun appel au modèle : tout est déterministe et gratuit.
+
+### Où il en est (26/11/2026)
+
+| | |
+|---|---|
+| ✅ Branché sur Claude Code | Essai réel sur cas-03 avec le skill : Claude lit le dossier par `lire_dossier`, se contrôle, retire un chiffre que `verifier_reponse` signale absent du dossier, se note : 36/36, 0 invention, 8 tours, 50 s, 0,20 $. Rejouable dans l'interface. |
+| ✅ Deux transports | stdio, et streamable HTTP, tous deux testés par un échange réel avec le client du SDK. |
+| ✅ Surface limitée | `lire_dossier` n'accepte que `cas-NN` ; dans l'interface, Claude n'a que Skill, Read, ToolSearch et ces quatre outils (`--tools`, pas de shell ni d'écriture). |
+| ❌ Authentification | Aucune. Le mode HTTP n'écoute que sur 127.0.0.1 : ne pas l'exposer tel quel. |
+| ❌ Copilot Studio | Jamais branché : l'essai demande un espace Microsoft 365. |
+| ❌ Dossiers réels | Il ne lit que les dossiers de test, et la note exige une réponse attendue. |
+
+Pour un usage réel : héberger le serveur chez le client derrière son authentification, lire les DCE dans SharePoint avec les droits de l'utilisateur, garder `verifier_reponse` (qui ne demande aucune réponse attendue), journaliser chaque appel, et repasser le banc avant la mise en service.
 
 ## Lancer l'évaluation
 
@@ -136,8 +150,8 @@ lecture-dce/
   app.py, ui/             l'interface locale (http://127.0.0.1:8790)
   mcp_server.py           le serveur MCP (4 outils, sans appel au modèle)
   .mcp.json               l'enregistre pour Claude Code dans ce dossier
-  tests/                  tests de l'interface
-    test_mcp.py           tests du serveur MCP, dont un échange réel en stdio
+  tests/                  31 tests : interface, routes, traduction du flux Claude Code
+    test_mcp.py           tests du serveur MCP, dont un échange réel en stdio et un en HTTP
   CHANGELOG.md            chaque version et son score
 ```
 

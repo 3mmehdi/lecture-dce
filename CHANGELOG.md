@@ -2,6 +2,14 @@
 
 Chaque version est évaluée sur les mêmes 5 dossiers, avec le même modèle (Claude Sonnet).
 
+## Serveur MCP, 26/11/2026 : branché sur Claude Code, et en HTTP
+
+- Essai réel : Claude Code, le skill et le serveur sur cas-03. Claude lit le dossier par `lire_dossier`, se contrôle avec `verifier_reponse`, retire un chiffre signalé absent du dossier (« 1/1000 », un seuil de la grille), se note avec `noter_reponse` : 36/36, 0 invention, 8 tours, 50 s, 0,20 $.
+- Interface : case *Avec le serveur MCP* dans l'onglet *Dans Claude Code*. Les appels d'outils MCP s'affichent en clair (arguments longs résumés), avec le retour du contrôle et de la note. Conversation enregistrée : `evals/discussions/cas-03-mcp.json`.
+- Les outils intégrés sont fixés par `--tools Skill,Read,ToolSearch` : avec `--disallowedTools`, un premier essai a tenté d'écrire un fichier.
+- `python mcp_server.py --http [port]` : streamable HTTP sur 127.0.0.1, sans authentification.
+- 4 tests de plus (31 au total), dont un échange réel en HTTP.
+
 ## Interface, 25/11/2026 (soir) : une lecture, deux vues
 
 - *Lire un dossier* passe par Claude Code (`/api/discussion`) : la même conversation remplit la fiche et l'onglet *Dans Claude Code*. Le bandeau affiche le skill choisi et le nombre de tours ; un lien ouvre le déroulé.

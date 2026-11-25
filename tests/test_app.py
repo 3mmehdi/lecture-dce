@@ -99,6 +99,23 @@ class Discussion(unittest.TestCase):
         self.assertTrue(sortie[0]["present"])
         self.assertNotIn(app.MAISON, sortie[3]["debut"])  # aucun chemin personnel à l'écran
 
+    def test_traduction_des_outils_mcp(self):
+        note = json.dumps({"points": 36, "sur": 36, "inventions": 0, "detail": {}, "statuts_faux": []})
+        controle = json.dumps({"manquantes": [], "statuts_inconnus": [], "sans_source": [], "ok": True,
+                               "explications": {"a_expliquer": 5, "manquantes": [], "chiffres_absents": [{"cle": "penalites_retard", "chiffre": "1/1000"}]}})
+        vus, sortie = set(), []
+        for e in [
+            {"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "mcp__lecture-dce__noter_reponse",
+                                                           "input": {"cas": "cas-03", "reponse_json": "x" * 5000}}]}},
+            {"type": "user", "message": {"content": [{"type": "tool_result", "content": [{"type": "text", "text": controle}]}]}},
+            {"type": "user", "message": {"content": [{"type": "tool_result", "content": note}]}},
+            {"type": "user", "message": {"content": [{"type": "tool_result", "content": "# Un dossier, " + "texte " * 20}]}},
+        ]:
+            sortie += list(app.traduire(e, vus))
+        self.assertEqual([x["etape"] for x in sortie], ["outil", "mcp_controle", "mcp_note", "lu"])
+        self.assertEqual(sortie[0]["detail"], "cas=cas-03, reponse_json=<5 000 caractères>")  # pas 5 000 caractères à l'écran
+        self.assertEqual((sortie[1]["expliques"], sortie[1]["absents"], sortie[2]["points"]), (5, ["1/1000"], 36))
+
 class Routes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -145,6 +162,19 @@ class Routes(unittest.TestCase):
                 texte = (app.EV / c / "dce.md").read_text(encoding="utf-8")
                 ev = self.post("/api/discussion", {"texte": texte, "cas": c, "mode": "rejouer"})
                 self.assertEqual(next(e for e in ev if e["etape"] == "notation")["inventions"], 0)
+
+    def test_mcp_demande_un_dossier_de_test(self):
+        ev = self.post("/api/discussion", {"texte": DOSSIER, "mode": "rejouer", "mcp": True})
+        self.assertEqual(ev[-1]["etape"], "erreur")
+
+    def test_discussion_mcp_rejouee(self):
+        if not (app.DISCUSSIONS / "cas-03-mcp.json").exists(): self.skipTest("aucune conversation MCP enregistrée")
+        texte = (app.EV / "cas-03" / "dce.md").read_text(encoding="utf-8")
+        ev = self.post("/api/discussion", {"texte": texte, "cas": "cas-03", "mode": "rejouer", "mcp": True})
+        etapes = [e["etape"] for e in ev]
+        self.assertIn("mcp_note", etapes)
+        self.assertTrue(any(e["etape"] == "outil" and e["nom"].endswith("noter_reponse") for e in ev))
+        self.assertEqual(next(e for e in ev if e["etape"] == "notation")["inventions"], 0)
 
     def test_rejouer_dossier_colle_refuse(self):
         ev = self.post("/api/lire", {"texte": DOSSIER, "mode": "rejouer"})
