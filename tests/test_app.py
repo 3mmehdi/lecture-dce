@@ -13,6 +13,16 @@ Art. 2.2 Délai : 12 mois.
 Art. 3 Délai : 14 mois.
 """
 
+class Regles(unittest.TestCase):
+    def test_les_douze_regles_de_statut(self):
+        self.assertEqual(set(app.REGLES), set(app.ev.CLES))
+        self.assertIn("1/1000", app.REGLES["penalites_retard"]["regle"])
+        self.assertEqual(app.REGLES["visite"]["piece"], "RC")
+
+    def test_regle_jointe_a_chaque_point(self):
+        points = app.points_affiches({}, app.decouper(DOSSIER))
+        self.assertTrue(all(p["regle"] and p["piece_habituelle"] for p in points))
+
 class Decoupage(unittest.TestCase):
     def test_pieces_et_articles(self):
         d = app.decouper(DOSSIER)
@@ -92,7 +102,7 @@ class Discussion(unittest.TestCase):
 class Routes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.srv = app.ThreadingHTTPServer(("127.0.0.1", 0), app.Gestion)
+        cls.srv = app.Serveur(("127.0.0.1", 0), app.Gestion)
         cls.url = f"http://127.0.0.1:{cls.srv.server_address[1]}"
         threading.Thread(target=cls.srv.serve_forever, daemon=True).start()
     @classmethod
@@ -128,6 +138,14 @@ class Routes(unittest.TestCase):
         self.assertIn("charge", etapes); self.assertEqual(etapes[-1], "fin")
         self.assertEqual(next(e for e in ev if e["etape"] == "notation")["inventions"], 0)
 
+    def test_les_cinq_conversations_rejouees(self):
+        # « Lire un dossier » passe par Claude Code : le mode Rejouer doit couvrir les cinq dossiers de test
+        for c in sorted(p.name for p in app.EV.iterdir() if p.name.startswith("cas-")):
+            with self.subTest(cas=c):
+                texte = (app.EV / c / "dce.md").read_text(encoding="utf-8")
+                ev = self.post("/api/discussion", {"texte": texte, "cas": c, "mode": "rejouer"})
+                self.assertEqual(next(e for e in ev if e["etape"] == "notation")["inventions"], 0)
+
     def test_rejouer_dossier_colle_refuse(self):
         ev = self.post("/api/lire", {"texte": DOSSIER, "mode": "rejouer"})
         self.assertEqual(ev[-1]["etape"], "erreur")
@@ -135,6 +153,11 @@ class Routes(unittest.TestCase):
     def test_banc_rejoue(self):
         ev = self.post("/api/banc", {"version": "v0.1", "mode": "rejouer"})
         self.assertEqual(ev[-1], {"etape": "fin", "score": 95.0, "inventions": 0})
+
+    def test_deuxieme_serveur_refuse_sous_windows(self):
+        if sys.platform != "win32": self.skipTest("Windows seulement")
+        with self.assertRaises(OSError):
+            app.Serveur(("127.0.0.1", self.srv.server_address[1]), app.Gestion)
 
     def test_pas_de_sortie_du_dossier(self):
         with self.assertRaises(urllib.error.HTTPError):

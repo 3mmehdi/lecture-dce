@@ -59,6 +59,16 @@ def cas_disponibles():
         out.append({"id": d.name, "titre": decouper(texte)["titre"], "texte": texte})
     return out
 
+def regles():
+    """references/points.md -> {clé: {piece, regle}} : la règle de statut que le skill applique, montrée à côté du point."""
+    out = {}
+    for l in (ICI / "references" / "points.md").read_text(encoding="utf-8").splitlines():
+        c = [x.strip() for x in l.strip().strip("|").split("|")]
+        if len(c) == 4 and c[0] in ev.CLES: out[c[0]] = {"piece": c[2], "regle": c[3].replace("`", "")}
+    return out
+
+REGLES = regles()
+
 def attendu(cas): return json.loads((EV / cas / "attendu.json").read_text(encoding="utf-8"))
 
 def resultats(version):
@@ -90,7 +100,8 @@ def points_affiches(rep, dossier, absents=()):
         out.append({"cle": k, "nom": NOMS[k], "valeur": r.get("valeur", ""), "source": r.get("source", ""), "statut": r.get("statut", ""),
                     "lignes": lignes_source(r.get("source", ""), dossier),
                     "pourquoi": r.get("pourquoi", ""), "que_faire": r.get("que_faire", ""), "question": r.get("question", ""),
-                    "a_relire": sorted({a["chiffre"] for a in absents if a["cle"] == k})})
+                    "a_relire": sorted({a["chiffre"] for a in absents if a["cle"] == k}),
+                    "regle": REGLES.get(k, {}).get("regle", ""), "piece_habituelle": REGLES.get(k, {}).get("piece", "")})
     return out
 
 def a_faire_affiche(rep, dossier):
@@ -305,8 +316,15 @@ class Gestion(BaseHTTPRequestHandler):
             return self._flux(derouler_banc(v, mode, d.get("modele") or "sonnet"))
         self.send_error(404)
 
+class Serveur(ThreadingHTTPServer):
+    # Sous Windows, SO_REUSEADDR laisse un deuxième serveur s'ouvrir sur le même port : l'ancien continuerait de répondre
+    allow_reuse_address = sys.platform != "win32"
+
 if __name__ == "__main__":
-    srv = ThreadingHTTPServer((HOTE, PORT), Gestion)
+    try:
+        srv = Serveur((HOTE, PORT), Gestion)
+    except OSError:
+        sys.exit(f"Le port {PORT} est déjà pris : une interface tourne sans doute déjà. Ferme l'autre terminal, ou ouvre http://{HOTE}:{PORT}")
     print(f"lecture-dce : http://{HOTE}:{PORT}  (Ctrl+C pour arrêter)")
     try:
         srv.serve_forever()

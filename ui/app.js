@@ -94,7 +94,7 @@ function viderReleve() {
   $('#vide-releve').hidden = false; $('#alertes').innerHTML = ''; $('#points').innerHTML = ''; $('#notation').innerHTML = '';
   $('#bloc-a-faire').hidden = true; $('#a-faire').innerHTML = ''; $('#titre-points').hidden = true;
   $$('#etapes li').forEach((li) => { li.className = ''; $('span', li).textContent = '—'; });
-  $('#btn-brut').disabled = true; $('#brut').hidden = true; dernierBrut = null;
+  $('#btn-brut').disabled = true; $('#brut').hidden = true; dernierBrut = null; $('#btn-voir-claude').disabled = true;
 }
 
 function etape(nom, etat, texte) {
@@ -138,6 +138,7 @@ function montrer(li) {
 
 function explication(p) {
   return `<div class="explication" id="expl-${p.cle}" hidden>
+      ${p.regle ? `<p class="regle"><b>Règle du skill</b>Cherché d'abord dans : ${esc(p.piece_habituelle)}. ${esc(p.regle)}<small>references/points.md : le statut se décide sur ces seuils, écrits avant les tests.</small></p>` : ''}
       ${p.pourquoi ? `<p><b>Pourquoi</b>${esc(p.pourquoi)}</p>` : ''}
       ${p.que_faire ? `<p><b>Ce qu'il faut faire</b>${esc(p.que_faire)}</p>` : ''}
       ${p.question ? `<div class="question"><b>Question à poser à l'acheteur</b><q>${esc(p.question)}</q>
@@ -159,7 +160,7 @@ function afficherPoints(points, alertes, faux = [], aFaire = null) {
   const ol = $('#points');
   ol.classList.remove('arrive'); void ol.offsetWidth; ol.classList.add('arrive');
   ol.innerHTML = points.map((p, i) => {
-    const expl = EXPLIQUE.has(p.statut) && (p.pourquoi || p.que_faire);
+    const explique = EXPLIQUE.has(p.statut) && (p.pourquoi || p.que_faire), expl = explique || p.regle;
     return `
     <li class="point ${p.statut} ${faux.includes(p.cle) ? 'faux' : ''}" style="--i:${i}">
       <button data-i="${i}" aria-pressed="false" ${expl ? `aria-expanded="false" aria-controls="expl-${p.cle}"` : ''}>
@@ -167,7 +168,7 @@ function afficherPoints(points, alertes, faux = [], aFaire = null) {
         <span class="statut ${p.statut}">${LIB[p.statut] || esc(p.statut) || '?'}</span>
         <span class="valeur">${esc(p.valeur)}</span>
         <span class="source">${p.source ? esc(p.source) : 'aucune source : rien dans le dossier'}</span>
-        ${expl ? '<span class="indice">Pourquoi, et quoi faire</span>' : ''}
+        ${expl ? `<span class="indice">${explique ? 'Pourquoi, et quoi faire' : 'La règle appliquée'}</span>` : ''}
       </button>${expl ? explication(p) : ''}</li>`;
   }).join('');
   $$('.point > button', ol).forEach((b) => b.addEventListener('click', () => {
@@ -187,9 +188,12 @@ $('#btn-lire').addEventListener('click', async () => {
   if (enCours) return;
   const texte = casChoisi ? cas.find((c) => c.id === casChoisi).texte : $('#texte-colle').value;
   if (!texte.trim()) { $('#notation').innerHTML = '<p class="erreur">Le dossier est vide. Choisis un dossier ou colle son texte.</p>'; return; }
-  viderReleve(); enCours = true; $('#btn-lire').disabled = true; $('#btn-lire').textContent = 'Lecture en cours…';
+  viderReleve(); preparerClaude(casChoisi, true);
+  enCours = true; $('#btn-lire').disabled = true; $('#btn-lire').textContent = 'Lecture en cours…';
   try {
-    await flux('/api/lire', { texte, cas: casChoisi, mode }, traiterLecture);
+    // Une seule conversation Claude Code : la fiche ici, le déroulé dans l'onglet « Dans Claude Code »
+    await flux('/api/discussion', { texte, cas: casChoisi, mode, question: $('#claude-question').value },
+      (e) => { traiterClaude(e); lectureDepuisClaude(e); });
   } catch (err) {
     arreterChrono(); $('#notation').innerHTML = `<p class="erreur">${esc(err.message)}</p>`;
   } finally {
@@ -219,6 +223,25 @@ function traiterLecture(e) {
       }
       if (e.etape === 'erreur') { arreterChrono(); etape('appel', 'echec', 'échec'); $('#notation').innerHTML = `<p class="erreur">${esc(e.message)}</p>`; }
 }
+
+// Les étapes de la conversation, traduites pour le bandeau de la fiche
+function lectureDepuisClaude(e) {
+  if (['dossier', 'controle', 'points', 'notation', 'erreur'].includes(e.etape)) return traiterLecture(e);
+  if (e.etape === 'demande') etape('consigne', 'encours', 'la question seule, sans consigne collée');
+  if (e.etape === 'session') { if (e.rejoue) etape('appel', 'fait', 'conversation rejouée'); else { etape('appel', 'encours', 'en cours'); demarrerChrono(); } }
+  if (e.etape === 'charge') etape('consigne', 'fait', `lecture-dce, ${milliers(e.caracteres)} caractères chargés`);
+  if (e.etape === 'texte') {
+    try { dernierBrut = JSON.parse(e.texte.match(/\{[\s\S]*\}/)[0]); $('#btn-brut').disabled = false; } catch { /* le serveur le signale */ }
+  }
+  if (e.etape === 'resultat') {
+    arreterChrono();
+    etape('appel', 'fait', `${e.tours} tours${e.rejoue ? ', rejoué' : ''}`);
+    etape('reponse', 'fait', `${sec(e.duree_s)}, ${euros(e.cout_usd)}`);
+    $('#btn-voir-claude').disabled = false;
+  }
+}
+
+$('#btn-voir-claude').addEventListener('click', () => ouvrirVue('claude'));
 
 $('#btn-brut').addEventListener('click', () => {
   const pre = $('#brut');
@@ -379,13 +402,20 @@ async function ecart(e) {
   const ligne = r?.skill?.cas.find((x) => x.cas === c);
   if (!ligne) return;
   $('#ecart').hidden = false;
-  $('#ecart').innerHTML = `<h3>Face à « Lire un dossier »</h3><table>
-    <tr><th></th><th>Consigne injectée</th><th>Claude Code</th></tr>
+  $('#ecart').innerHTML = `<h3>Face au banc d'évaluation</h3><table>
+    <tr><th></th><th>Banc : consigne injectée</th><th>Claude Code</th></tr>
     <tr><td>Qui choisit la consigne</td><td>l'interface</td><td>Claude</td></tr>
     <tr><td>Tours</td><td>1</td><td>${e.tours}</td></tr>
     <tr><td>Durée</td><td>${sec(ligne.duree_s)}</td><td>${sec(e.duree_s)}</td></tr>
     <tr><td>Coût</td><td>${euros(ligne.cout_usd)}</td><td>${euros(e.cout_usd)}</td></tr></table>
     <p>Le surcoût paie le choix du skill et la lecture de la référence. En échange, le chargé d'études n'a rien à coller : il pose sa question.</p>`;
+}
+
+function preparerClaude(c, depuisLire) {
+  $('#fil').innerHTML = ''; $('#sortie-claude').hidden = true; $('#ecart').hidden = true; ficheClaude = [];
+  $$('#phases li').forEach((li) => { li.className = ''; });
+  $('#claude-cas').value = c || '';
+  if (depuisLire) ajouterFil('Conversation lancée depuis « Lire un dossier » : la fiche affichée là-bas vient de cette réponse.', 'systeme');
 }
 
 $('#form-claude').addEventListener('submit', async (ev) => {
@@ -394,8 +424,7 @@ $('#form-claude').addEventListener('submit', async (ev) => {
   const c = $('#claude-cas').value;
   const texte = c ? cas.find((x) => x.id === c).texte : $('#texte-colle').value;
   if (!texte.trim()) { ajouterFil('Aucun dossier collé dans « Lire un dossier ». Choisis un dossier de test ou colle d\'abord un texte.', 'erreur'); return; }
-  $('#fil').innerHTML = ''; $('#sortie-claude').hidden = true; $('#ecart').hidden = true; ficheClaude = [];
-  $$('#phases li').forEach((li) => { li.className = ''; });
+  preparerClaude(c || null, false);
   enCours = true; $('#btn-claude').disabled = true; $('#btn-claude').textContent = mode === 'direct' ? 'Claude Code travaille…' : 'Rejeu…';
   try {
     await flux('/api/discussion', { texte, cas: c || null, mode, question: $('#claude-question').value }, traiterClaude);

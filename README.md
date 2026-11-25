@@ -35,10 +35,10 @@ python app.py
 
 Puis ouvrir http://127.0.0.1:8790. Rien à installer : bibliothèque standard seulement, et le serveur n'écoute que sur le poste.
 
-- **Lire un dossier** : choisir un des 5 dossiers (ou coller le texte d'un autre), lancer la lecture. Les 12 points s'affichent avec leur statut, les alertes et les actions datées avant la remise. Un clic sur un point allume, dans le dossier, l'article qu'il cite : on voit d'où vient chaque valeur. Sur un risque, le clic ouvre aussi le pourquoi, l'action à mener et la question à copier pour l'acheteur. En bas, les étapes (consigne, appel au modèle, réponse, contrôle du format, notation) avec leur durée et leur coût, et la réponse brute du modèle.
-- **Dans Claude Code** : le même skill, utilisé comme un chargé d'études le ferait. L'interface envoie seulement une question (« Analyse ce DCE… ») et le dossier à `claude -p`, sans consigne. Le fil montre Claude qui choisit le skill d'après sa description, charge `SKILL.md`, lit `references/points.md` à la demande, puis répond. À côté : les étapes, et l'écart avec la lecture directe (tours, durée, coût). Un bouton ouvre la même réponse dans la vue *Lire un dossier*, avec la même note. Il faut d'abord installer le skill (voir plus bas).
+- **Lire un dossier** : choisir un des 5 dossiers (ou coller le texte d'un autre), lancer la lecture. La lecture passe par Claude Code, comme pour un chargé d'études : une question et le dossier, et Claude choisit le skill seul. Les 12 points s'affichent avec leur statut, les alertes et les actions datées avant la remise. Un clic sur un point allume, dans le dossier, l'article qu'il cite : on voit d'où vient chaque valeur. Le clic montre aussi la règle de `references/points.md` qui a fixé le statut ; sur un risque, il ouvre en plus le pourquoi, l'action à mener et la question à copier pour l'acheteur. En bas, les étapes (skill choisi, tours de Claude Code, réponse, contrôle du format, notation) avec leur durée et leur coût, la réponse brute, et un lien vers le déroulé de la conversation.
+- **Dans Claude Code** : le déroulé de la conversation, qu'elle soit lancée ici ou depuis *Lire un dossier* (c'est la même : une lecture remplit les deux onglets). L'interface envoie seulement une question (« Analyse ce DCE… ») et le dossier à `claude -p`, sans consigne. Le fil montre Claude qui choisit le skill d'après sa description, charge `SKILL.md`, lit `references/points.md` à la demande, puis répond. À côté : les étapes, et l'écart avec le banc, qui injecte la consigne en un seul tour (tours, durée, coût). Un bouton ouvre la même réponse dans la vue *Lire un dossier*, avec la même note. Il faut d'abord installer le skill (voir plus bas).
 - **Évaluer le skill** : la consigne simple et le skill côte à côte, dossier par dossier, et la liste des statuts que le skill corrige. Chaque version peut être relancée.
-- **En direct ou Rejouer** : *En direct* appelle vraiment Claude (de 20 à 50 s par dossier). *Rejouer* réaffiche les réponses mesurées, sans appel (pour *Dans Claude Code*, les conversations enregistrées dans `evals/discussions/`).
+- **En direct ou Rejouer** : *En direct* appelle vraiment Claude (de 20 à 50 s par dossier). *Rejouer* réaffiche les réponses mesurées, sans appel : les conversations enregistrées dans `evals/discussions/`, une par dossier de test (36/36 et 0 invention sur les cinq).
 
 L'interface réutilise les fonctions de `evals/evaluer.py` : le score affiché est exactement celui du banc. Tests : `python -m unittest discover -s tests`.
 
@@ -100,6 +100,16 @@ SCORE essai 100.0 % · inventions 0
 
 ---
 
+## D'où viennent les seuils
+
+Les règles de statut de `references/points.md` reprennent le droit des marchés publics de travaux, en plus prudent :
+
+- pénalités de retard : le CCAG-Travaux 2021 prévoit par défaut 1/3000 du montant par jour, plafonné à 10 % (art. 19.2). Le skill classe en `risque` au-delà de 1/1000 par jour (trois fois le défaut) ou sans plafond ;
+- retenue de garantie : le Code de la commande publique la plafonne à 5 % (R2191-33). Au-delà, le skill met `a_verifier` ;
+- prix fermes : une clause de révision est obligatoire au-delà de 3 mois quand les matériaux suivent les cours mondiaux (R2112-14). Le skill classe en `risque` des prix fermes non révisables sur plus de 3 mois.
+
+Le skill ne consulte aucun texte de loi : il applique ces seuils au seul dossier, et cite la pièce et l'article du dossier. Ce sont des choix de démonstration, à recaler avec les chargés d'études et le service juridique d'une entreprise avant tout usage réel.
+
 ## Comment c'est noté
 
 - **12 points par dossier, 3 points chacun** : la valeur juste (les mots attendus sont présents), le statut juste, la source citée. Soit 36 points par dossier.
@@ -115,7 +125,7 @@ SCORE essai 100.0 % · inventions 0
 ```
 lecture-dce/
   SKILL.md                consignes, déclencheur, contre-déclencheurs
-  references/points.md    les 12 points et où les chercher
+  references/points.md    les 12 points, où les chercher, et les seuils qui fixent le statut
   evals/
     creer_cas.py          dossiers de test + réponses attendues
     evaluer.py            exécute, note, trace coût et durée

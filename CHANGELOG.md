@@ -2,6 +2,15 @@
 
 Chaque version est évaluée sur les mêmes 5 dossiers, avec le même modèle (Claude Sonnet).
 
+## Interface, 25/11/2026 (soir) : une lecture, deux vues
+
+- *Lire un dossier* passe par Claude Code (`/api/discussion`) : la même conversation remplit la fiche et l'onglet *Dans Claude Code*. Le bandeau affiche le skill choisi et le nombre de tours ; un lien ouvre le déroulé.
+- Chaque point affiche la règle de `references/points.md` qui a fixé son statut, même quand il est sûr.
+- Conversations enregistrées pour les cinq dossiers (cas-01 : 22 s, cas-04 : 13 s, cas-05 : 28 s, cas-03 rejoué : 27 s ; 0,19 à 0,22 $, 4 tours, 36/36 et 0 invention à chaque fois).
+- Sous Windows, un deuxième `python app.py` sur le même port est refusé avec un message : avant, il démarrait sans erreur et l'ancien serveur continuait de répondre.
+- 4 tests de plus (27 au total). Le skill n'a pas changé.
+- README : d'où viennent les seuils (CCAG-Travaux 2021, Code de la commande publique).
+
 ## Serveur MCP, 25/11/2026
 
 - `mcp_server.py` : 4 outils (`lister_dossiers`, `lire_dossier`, `verifier_reponse`, `noter_reponse`), qui réutilisent les fonctions de `app.py` et `evals/evaluer.py`. `.mcp.json` l'enregistre pour Claude Code.

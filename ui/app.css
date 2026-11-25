@@ -206,3 +206,5 @@ tr.encours td{color:var(--risque)}
   .etapes{flex-direction:column}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.point.ok .explication,.point.non_trouve .explication{border-left-color:var(--filet)}
+.explication .regle small{display:block;font-size:12px;color:var(--absent);margin-top:2px}
